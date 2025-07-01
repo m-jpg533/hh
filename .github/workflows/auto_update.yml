@@ -1,0 +1,33 @@
+name: Auto Update taiwan_flight_map
+
+on:
+  schedule:
+    - cron: '*/3 * * * *'  # 每 3 分鐘一次（GitHub Actions 最快可用）
+  workflow_dispatch:
+
+jobs:
+  update-html:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests folium
+
+      - name: Run update script
+        run: python hh-main/flight_update_script.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add taiwan_flight_map.html
+          git commit -m "Auto update map"
+          git push

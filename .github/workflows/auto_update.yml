@@ -23,7 +23,8 @@ jobs:
         run: pip install requests folium
 
       - name: Run update script
-        run: python hh-main/flight_update_script.py
+        
+        run: python flight_update_script.py
 
       - name: Move HTML to root for GitHub Pages
         run: mv hh-main/taiwan_flight_map.html ./taiwan_flight_map.html

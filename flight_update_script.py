@@ -1,4 +1,4 @@
-# flight_update_script.py
+
 import requests
 import folium
 from datetime import datetime
@@ -49,4 +49,10 @@ map_taiwan.get_root().html.add_child(folium.Element(title_html))
 
 # 輸出成 HTML
 map_taiwan.save("taiwan_flight_map.html")
+
+# 加入時間戳註解，讓 GitHub Pages 偵測變更
+with open("taiwan_flight_map.html", "a", encoding="utf-8") as f:
+    f.write(f"\n<!-- Auto-updated at {datetime.now()} -->\n")
+
 print("✅ taiwan_flight_map.html 更新完成")
+

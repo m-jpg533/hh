@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字幕卡片</title>
+<style>
+body {
+  background: #000;
+  margin: 0;
+  padding: 30px;
+  font-family: 'Microsoft JhengHei', sans-serif;
+  color: #fff;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.card {
+  width: 320px;
+  border: 2px solid #444;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #111;
+  box-shadow: 0 0 12px rgba(255,255,255,0.15);
+}
+
+.card iframe {
+  width: 100%;
+  height: 180px;
+  border: 0;
+}
+
+.card-content {
+  padding: 12px 14px;
+  min-height: 260px;
+}
+
+.card-content h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.subtitle {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #ffdd88;
+  text-align: left;
+  white-space: pre-wrap;
+  min-height: 200px;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  background: #ffdd88;
+  animation: blink 1s step-start infinite;
+  vertical-align: bottom;
+}
+
+@keyframes blink {
+  0%,50%,100% { opacity: 1; }
+  25%,75% { opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <iframe src="https://www.youtube.com/embed/byXKBTEMRS8" allowfullscreen></iframe>
+
+  <div class="card-content">
+    <h3>（打字顯示）</h3>
+    <div class="subtitle" id="subtitle"></div>
+  </div>
+</div>
+
+<script>
+// ★ 正確的字幕格式（每行要用字串）★
+const lines = [
+  
+  "0:01  [音樂]",
+  "0:06  [掌聲]",
+  "0:12  [音樂]",
+  "生而為人，必先生。",
+  "生於我摯愛的故鄉。",
+  "初生之風",
+  "背負著它",
+  "走過崎嶇之路",
+
+  "0:50  故鄉，父母長壽",
+  "0:54  [音樂]",
+  "0:57  我衷心祈禱，願一切如願。",
+  "1:02  悲傷即將到來。",
+  "1:06  即使是他",
+  "1:08  接受他不可避免的命運",
+  "1:14  無盡",
+  "1:16  繼續前進",
+  "1:21  不停歇地走下去",
+
+  "1:27  歷經磨難後",
+  "1:30  幸福就是生命",
+  "1:36  生命是",
+  "1:39  一陣轉瞬即逝的微風",
+  "1:43  [音樂]",
+  "1:46  懷著對明天的信念生活",
+
+  "1:52  在忙碌的工作日中",
+  "1:58  一顆疲憊的心",
+  "2:01  慰藉",
+  "2:04  夜空中繁星閃爍",
+  "2:10  星光下閃耀的水",
+  "2:16  消磨時光，無暇抬頭仰望",
+
+  "2:23  燃燒的紅色",
+  "2:26  即使我只是離開",
+  "2:29  無解地沉淪",
+  "2:35  隨著時間流逝經過",
+
+  "2:39  甚至",
+  "2:41  淚水",
+  "2:44  站起來。",
+  "2:47  但我仍然展望未來",
+  "2:50  靜靜地走向明天。",
+
+  "2:59  不",
+  "3:01  繼續前進",
+  "3:05  不停歇地走",
+
+  "3:12  之後",
+  "3:15  幸福是人生的旅程",
+  "3:23  短暫的",
+  "3:27  [音樂]",
+
+  "3:42  無盡的",
+  "3:44  繼續前進",
+  "3:48  不停歇地走",
+
+  "3:55  之後，是艱辛",
+  "3:58  幸福是人生的旅程",
+
+  "4:08  短暫的",
+  "4:16  [音樂]"
+];
+
+
+
+const subtitleDiv = document.getElementById('subtitle');
+let lineIndex = 0;
+let charIndex = 0;
+
+function type() {
+  if (lineIndex < lines.length) {
+    const line = lines[lineIndex];
+
+    subtitleDiv.innerHTML =
+      lines.slice(0, lineIndex).join("\n") +
+      (lineIndex > 0 ? "\n" : "") +
+      line.slice(0, charIndex) +
+      '<span class="cursor"></span>';
+
+    charIndex++;
+
+    if (charIndex <= line.length) {
+      setTimeout(type, 460);  
+    } else {
+      charIndex = 0;
+      lineIndex++;
+      setTimeout(type, 200);
+    }
+
+  } else {
+    subtitleDiv.innerHTML = lines.join("\n");
+  }
+}
+
+type();
+</script>
+
+</body>
+</html>

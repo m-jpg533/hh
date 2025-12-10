@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10秒後影片顯示（有聲音）</title>
+
+<style>
+  body {
+    background: black;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .clock {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    border: 8px solid white;
+    position: absolute;
+    overflow: hidden;
+    z-index: 10;
+    transition: opacity 1.5s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* 阿拉伯數字（大字 + 亮白 + 黑描邊） */
+  .num {
+    position: absolute;
+    font-size: 40px;
+    font-weight: 900;
+    color: block;
+    text-shadow: 
+      -3px -3px 3px black,
+      3px -3px 3px black,
+      -3px 3px 3px black,
+      3px 3px 3px black;
+  }
+
+  .n12 { top: 12px; left: 50%; transform: translateX(-50%); }
+  .n1  { top: 32px; right: 55px; }
+  .n2  { top: 80px; right: 25px; }
+  .n3  { top: 50%; right: 5px; transform: translateY(-50%); }
+  .n4  { bottom: 80px; right: 25px; }
+  .n5  { bottom: 32px; right: 55px; }
+  .n6  { bottom: 12px; left: 50%; transform: translateX(-50%); }
+  .n7  { bottom: 32px; left: 55px; }
+  .n8  { bottom: 80px; left: 25px; }
+  .n9  { top: 50%; left: 5px; transform: translateY(-50%); }
+  .n10 { top: 80px; left: 25px; }
+  .n11 { top: 32px; left: 55px; }
+
+  /* 背景圖加暗，讓數字更清楚 */
+  .clock img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    opacity: 0.45;
+  }
+
+  .hand {
+    position: absolute;
+    width: 8px;
+    left: 50%;
+    top: 50%;
+    transform-origin: 50% 100%;
+    transform: translate(-50%, -100%) rotate(0deg);
+    z-index: 11;
+  }
+
+  .hour {
+    height: 70px;
+    background: red;
+    animation: rotateHour 12s linear infinite;
+  }
+
+  .minute {
+    height: 110px;
+    background: yellow;
+    animation: rotateMinute 6s linear infinite;
+  }
+
+  @keyframes rotateHour {
+    from { transform: translate(-50%, -100%) rotate(0deg); }
+    to   { transform: translate(-50%, -100%) rotate(360deg); }
+  }
+
+  @keyframes rotateMinute {
+    from { transform: translate(-50%, -100%) rotate(0deg); }
+    to   { transform: translate(-50%, -100%) rotate(360deg); }
+  }
+
+  video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 480px;
+    width: 100%;
+    display: none;
+    border-radius: 20px;
+    z-index: 5;
+  }
+
+  #startBtn {
+    position: absolute;
+    z-index: 20;
+    padding: 15px 30px;
+    font-size: 22px;
+    border: none;
+    border-radius: 10px;
+    background: #ffcc00;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<button id="startBtn">▶ 點這裡開始（含聲音）</button>
+
+<div class="clock" id="clock">
+
+  <!-- 數字（大清楚版） -->
+  <div class="num n12">12</div>
+  <div class="num n1">1</div>
+  <div class="num n2">2</div>
+  <div class="num n3">3</div>
+  <div class="num n4">4</div>
+  <div class="num n5">5</div>
+  <div class="num n6">6</div>
+  <div class="num n7">7</div>
+  <div class="num n8">8</div>
+  <div class="num n9">9</div>
+  <div class="num n10">10</div>
+  <div class="num n11">11</div>
+
+  <!-- 背景圖 -->
+  <img src="https://m-jpg533.github.io/hh/50.jpg">
+
+  <!-- 指針 -->
+  <div class="hand hour"></div>
+  <div class="hand minute"></div>
+</div>
+
+<video id="video" src="https://m-jpg533.github.io/hh/70.mp4"></video>
+
+<script>
+const btn = document.getElementById("startBtn");
+const clock = document.getElementById("clock");
+const video = document.getElementById("video");
+
+btn.addEventListener("click", () => {
+
+  btn.style.display = "none";
+  video.play();
+
+  setTimeout(() => {
+    clock.style.opacity = "0";
+
+    setTimeout(() => {
+      clock.style.display = "none";
+      video.style.display = "block";
+      video.play();
+    }, 1500);
+
+  }, 7000);
+
+});
+</script>
+
+</body>
+</html>

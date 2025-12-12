@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文章 + 圖片 + 影片切換展示</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: gold;
+    font-family: "Microsoft JhengHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #content {
+    font-size: 36px;
+    line-height: 1.6;
+    max-width: 90%;
+    min-height: 300px;
+  }
+
+  img, video, iframe {
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 10px;
+  }
+
+  .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+  }
+
+  button:hover {
+    background: #666;
+  }
+</style>
+</head>
+<body>
+
+<div id="content">點擊「下一頁」開始</div>
+
+<div class="buttons">
+  <button id="prevBtn">上一頁</button>
+  <button id="nextBtn">下一頁</button>
+</div>
+
+<script>
+  // 內容結構：可放文字 / 圖片 / 影片 / YouTube
+  const pages = [
+
+    // 第 1 頁
+    { type: "text", data: `你咧少年款款走入阮身邊
+一句「交予阮啦」伴阮一暝一工
+無論風雨 無論世情多艱苦
+你攏笑講「做伙咱就袂孤單人」
+彼个年代 錢無夠腰酸目眵紅
+你講「阮的家 阮嘛愛用心顧工」
+暗時的燈 等你咧加班返來開
+阮看你汗流 心酸亦感動你一世人
+青春到白頭 時間無留一步
+咱牽著手 看子孫大漢攏有路...` },
+
+    // 第 2 頁
+    { type: "text", data: `你彼份疼惜 阮到今嘛放袂落
+堅定彼个心 阮永遠攬咧心肚底
+你用一生 做阮的靠山無退縮
+風吹雨淋 你攏替阮擋前跤
+如今老了 阮嘛欲做你的倚靠
+互相相伴 走到最後袂孤單
+阮尪是阮一世的靠山
+阮若煩惱 你嘛永遠做阮的伴
+你的手 雖粗重嘛充滿溫暖
+一生奉獻 無怨無悔疼阮甲甘款...` },
+
+    // 第 3 頁
+    { type: "text", data: `阮尪是阮永遠的依靠
+你的身影 是阮一世攏袂放走
+風吹雨落 阮嘛牽著繼續行
+你講過一句話 阮會記咧彼爿
+阮尪是阮永遠的依靠
+你的身影 是阮一世攏袂放走
+風吹雨落 阮嘛牽著繼續行
+你講過一句話 阮會記咧彼爿
+你講過一句話 阮會記咧 嗯~
+彼爿~...` },
+
+    // 第 4 頁：圖片
+    { type: "image", data: "https://m-jpg533.github.io/hh/50.jpg" },
+
+    // 第 5 頁：YouTube 影片（已修正）
+    { 
+      type: "youtube",
+      data: "https://www.youtube.com/embed/uzD1lRuT_9U?start=270"
+    }
+  ];
+
+  let index = 0;
+
+  function renderPage() {
+    const area = document.getElementById("content");
+    area.innerHTML = ""; // 清空顯示區域
+
+    const page = pages[index];
+
+    if (page.type === "text") {
+      area.innerHTML = page.data;
+    }
+    else if (page.type === "image") {
+      const img = document.createElement("img");
+      img.src = page.data;
+      area.appendChild(img);
+    }
+    else if (page.type === "video") {
+      const video = document.createElement("video");
+      video.src = page.data;
+      video.controls = true;
+      video.autoplay = true;
+      area.appendChild(video);
+    }
+    else if (page.type === "youtube") {
+      const iframe = document.createElement("iframe");
+      iframe.src = page.data;
+      iframe.width = "100%";
+      iframe.height = "400";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      area.appendChild(iframe);
+    }
+  }
+
+  // 下一頁
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (index < pages.length - 1) {
+      index++;
+      renderPage();
+    }
+  });
+
+  // 上一頁
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (index > 0) {
+      index--;
+      renderPage();
+    }
+  });
+
+  // 初始顯示
+  renderPage();
+</script>
+
+</body>
+</html>

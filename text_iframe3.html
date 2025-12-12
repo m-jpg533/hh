@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文章 + 圖片 + 影片切換展示</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: gold;
+    font-family: "Microsoft JhengHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #content {
+    font-size: 36px;
+    line-height: 1.6;
+    max-width: 90%;
+    min-height: 300px;
+  }
+
+  img, video, iframe {
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 10px;
+  }
+
+  .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+  }
+
+  button:hover {
+    background: #666;
+  }
+</style>
+</head>
+<body>
+
+<div id="content">點擊「下一頁」開始</div>
+
+<div class="buttons">
+  <button id="prevBtn">上一頁</button>
+  <button id="nextBtn">下一頁</button>
+</div>
+
+<script>
+  // 內容結構：可放文字 / 圖片 / 影片 / YouTube
+  const pages = [
+
+    // 第 1 頁
+    { type: "text", data: `觀看次數：50,080次  2025年10月23日  #OriginalSong #オリジナル曲 #JapaneseBallad
+秋風に揺れる紅葉を見つめながら、
+もう届かないと知りながらも、あなたへ向けた“こえ”をそっと歌にしました。
+あの日のぬくもりも、夜に溶けた祈りも、まだ胸の奥で息をしています。。...` },
+
+    // 第 2 頁
+    { type: "text", data: `🍁秋風に乗せて、想いを紡ぐ夜。
+ひとりきりの夜に浮かぶ、あなたの面影。
+声にならない恋心を、もみじに託して歌にしました。
+。...` },
+
+    // 第 3 頁
+    { type: "text", data: `誰かの記憶にふれる“音”は、きっと残せる──
+令和に生まれた情歌です。」心に残る音楽を届けています。
+実写映像、ショート動画などで“音の世界”を生成AIで作成し自由に表現中。
+ ...` },
+
+    // 第 4 頁：圖片
+    { type: "image", data: "https://m-jpg533.github.io/hh/50.jpg" },
+
+    // 第 5 頁：YouTube 影片（已修正）
+    { 
+      type: "youtube",
+      data: "https://www.youtube.com/embed/d_u8VqsKbT8?si=pWOb2WGDOMLMgtiX&amp;start=270" 
+    }
+  ];
+
+  let index = 0;
+
+  function renderPage() {
+    const area = document.getElementById("content");
+    area.innerHTML = ""; // 清空顯示區域
+
+    const page = pages[index];
+
+    if (page.type === "text") {
+      area.innerHTML = page.data;
+    }
+    else if (page.type === "image") {
+      const img = document.createElement("img");
+      img.src = page.data;
+      area.appendChild(img);
+    }
+    else if (page.type === "video") {
+      const video = document.createElement("video");
+      video.src = page.data;
+      video.controls = true;
+      video.autoplay = true;
+      area.appendChild(video);
+    }
+    else if (page.type === "youtube") {
+      const iframe = document.createElement("iframe");
+      iframe.src = page.data;
+      iframe.width = "100%";
+      iframe.height = "400";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      area.appendChild(iframe);
+    }
+  }
+
+  // 下一頁
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (index < pages.length - 1) {
+      index++;
+      renderPage();
+    }
+  });
+
+  // 上一頁
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (index > 0) {
+      index--;
+      renderPage();
+    }
+  });
+
+  // 初始顯示
+  renderPage();
+</script>
+
+</body>
+</html>

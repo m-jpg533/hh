@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文章 + 圖片 + 影片切換展示</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: gold;
+    font-family: "Microsoft JhengHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #content {
+    font-size: 36px;
+    line-height: 1.6;
+    max-width: 90%;
+    min-height: 300px;
+  }
+
+  img, video, iframe {
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 10px;
+  }
+
+  .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+  }
+
+  button:hover {
+    background: #666;
+  }
+</style>
+</head>
+<body>
+
+<div id="content">點擊「下一頁」開始</div>
+
+<div class="buttons">
+  <button id="prevBtn">上一頁</button>
+  <button id="nextBtn">下一頁</button>
+</div>
+
+<script>
+  // 內容結構：可放文字 / 圖片 / 影片 / YouTube
+  const pages = [
+
+    // 第 1 頁
+    { type: "text", data: `月台邊的風，親像你的手，輕輕撫過阮的面容。
+尾班車的聲，載走著啥人？留阮一個人，惦在雨中心頭重。
+當初的約定，你攏毋記啦，阮的心肝，是愈等愈寒。
+心愛你甘知影，阮的目屎是為誰流落土？
+
+（副歌）
+啊~ 孤單的夜車，載走著阮的夢，留阮在黑暗中看無光。
+心愛你叨位去，放阮一個人，像花蕊離開了露水。
+愛你愛甲無藥醫，情路行甲心頭碎，你敢是將阮當作一場戲？
+阮的心是嘸甘願，永遠等你等到天光時。...` },
+
+    // 第 2 頁
+    { type: "text", data: `眠床邊的相片，你笑甲這呢甜，誰知影隔日你就消失去。
+手機內的電話，毋敢來撥一次，驚聽到你冷淡的聲音。
+想起你彼當時，溫柔的眼神，像刀咧割阮的靈魂。
+阮的青春，為你塊浪費，你甘攏無看見阮的心？
+
+（副歌）
+啊~ 孤單的夜車，載走著阮的夢，留阮在黑暗中看無光。
+心愛你叨位去，放阮一個人，像花蕊離開了露水。
+愛你愛甲無藥醫，情路行甲心頭碎，你敢是將阮當作一場戲？
+阮的心是嘸甘願，永遠等你等到天光時。...` },
+
+    // 第 3 頁
+    { type: "text", data: `時間啊請你慢慢行，袂乎阮的愛來變卦。
+人生的情債，注定著愛還完，阮的痴，誰人會瞭解？
+
+（結尾）
+孤單的夜車，繼續塊行，載著阮無盡的思念。
+心愛你叨位去？...` },
+
+    // 第 4 頁：圖片
+    { type: "image", data: "https://m-jpg533.github.io/hh/50.jpg" },
+
+    // 第 5 頁：YouTube 影片（已修正）
+    { 
+      type: "youtube",
+      data: "https://www.youtube.com/embed/Vzr0XZ5r8Dk?si=HI3LL2yVk-S36uzZ&amp;start=270" 
+    }
+  ];
+
+  let index = 0;
+
+  function renderPage() {
+    const area = document.getElementById("content");
+    area.innerHTML = ""; // 清空顯示區域
+
+    const page = pages[index];
+
+    if (page.type === "text") {
+      area.innerHTML = page.data;
+    }
+    else if (page.type === "image") {
+      const img = document.createElement("img");
+      img.src = page.data;
+      area.appendChild(img);
+    }
+    else if (page.type === "video") {
+      const video = document.createElement("video");
+      video.src = page.data;
+      video.controls = true;
+      video.autoplay = true;
+      area.appendChild(video);
+    }
+    else if (page.type === "youtube") {
+      const iframe = document.createElement("iframe");
+      iframe.src = page.data;
+      iframe.width = "100%";
+      iframe.height = "400";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      area.appendChild(iframe);
+    }
+  }
+
+  // 下一頁
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (index < pages.length - 1) {
+      index++;
+      renderPage();
+    }
+  });
+
+  // 上一頁
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (index > 0) {
+      index--;
+      renderPage();
+    }
+  });
+
+  // 初始顯示
+  renderPage();
+</script>
+
+</body>
+</html>

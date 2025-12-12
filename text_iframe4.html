@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>圓圈旋轉影片不動</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: "Microsoft JhengHei", sans-serif;
+    }
+
+    /* 外框容器 */
+    .circle {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 旋轉的圓圈（由偽元素產生） */
+    .circle::before {
+      content: "";
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      border: 12px solid transparent;
+      border-top-color: #ffcc00;
+      border-right-color: #ff6600;
+      border-bottom-color: #ff00aa;
+      border-left-color: #00ccff;
+
+      animation: spin 3s linear infinite;
+      box-sizing: border-box;
+    }
+
+    /* 影片本體：固定不動 */
+    .circle iframe {
+      width: 330px;
+      height: 330px;
+      border-radius: 20px;
+      object-fit: cover;
+      position: relative; /* 確保不受旋轉影響 */
+      z-index: 2;
+    }
+
+    /* 旋轉動畫 */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="circle">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/Mj4IVX21zbU?si=VKHwTiLjcGNW9F3Q&amp;start=270" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  </div>
+</body>
+</html>

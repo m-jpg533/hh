@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文章 + 圖片 + 影片切換展示</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: gold;
+    font-family: "Microsoft JhengHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #content {
+    font-size: 36px;
+    line-height: 1.6;
+    max-width: 90%;
+    min-height: 300px;
+  }
+
+  img, video, iframe {
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 10px;
+  }
+
+  .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+  }
+
+  button:hover {
+    background: #666;
+  }
+</style>
+</head>
+<body>
+
+<div id="content">點擊「下一頁」開始</div>
+
+<div class="buttons">
+  <button id="prevBtn">上一頁</button>
+  <button id="nextBtn">下一頁</button>
+</div>
+
+<script>
+  // 內容結構：可放文字 / 圖片 / 影片 / YouTube
+  const pages = [
+
+    // 第 1 頁
+    { type: "text", data: `有一工 我的青春 若陪你 用盡
+越頭看 你會知誰是你最後的愛人
+男人啊 請你疼惜阮 的心
+
+你講 你愛自由 一粒心 還沒定
+不敢甲我 約定 驚辜負我一片真情
+我講 我真愛你 願意陪伴你身邊
+相信總有一天 你會回心轉意...` },
+
+    // 第 2 頁
+    { type: "text", data: `千年 萬年 不變的女 人心
+追求真愛的決心 比海水擱卡堅忍
+有一天 我的青春 若陪你用 盡
+越頭看 你會知誰是你最後的愛人
+
+
+你講 你愛自由 一粒心 還沒定
+不敢甲我 約定 驚辜負我一片真情
+我講 我真愛你 願意陪伴你身邊
+相信總有一天 你會回心轉意...` },
+
+    // 第 3 頁
+    { type: "text", data: `千年 萬年 不變的女 人心
+追求真愛的決心 比海水擱卡堅忍
+有一天 我的青春 若陪你用 盡
+越頭看 你會知誰是你最後的愛人
+
+千年 萬年 不變的女 人心
+追求真愛的決心 比海水擱卡堅忍
+有一天 我的青春 若陪你用 盡
+越頭看 你會知誰是你最後的愛人
+男人啊 請你疼惜阮 的心...` },
+
+    // 第 4 頁：圖片
+    { type: "image", data: "https://m-jpg533.github.io/hh/50.jpg" },
+
+    // 第 5 頁：YouTube 影片（已修正）
+    { 
+      type: "youtube",
+      data: "https://www.youtube.com/embed/h4wtouwhPf4?si=FOBjYH6fC93ueiTw&amp;start=270" 
+    }
+  ];
+
+  let index = 0;
+
+  function renderPage() {
+    const area = document.getElementById("content");
+    area.innerHTML = ""; // 清空顯示區域
+
+    const page = pages[index];
+
+    if (page.type === "text") {
+      area.innerHTML = page.data;
+    }
+    else if (page.type === "image") {
+      const img = document.createElement("img");
+      img.src = page.data;
+      area.appendChild(img);
+    }
+    else if (page.type === "video") {
+      const video = document.createElement("video");
+      video.src = page.data;
+      video.controls = true;
+      video.autoplay = true;
+      area.appendChild(video);
+    }
+    else if (page.type === "youtube") {
+      const iframe = document.createElement("iframe");
+      iframe.src = page.data;
+      iframe.width = "100%";
+      iframe.height = "400";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      area.appendChild(iframe);
+    }
+  }
+
+  // 下一頁
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (index < pages.length - 1) {
+      index++;
+      renderPage();
+    }
+  });
+
+  // 上一頁
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (index > 0) {
+      index--;
+      renderPage();
+    }
+  });
+
+  // 初始顯示
+  renderPage();
+</script>
+
+</body>
+</html>

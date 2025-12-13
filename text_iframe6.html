@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>內心的孤單與勇氣</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: gold;
+    font-family: "Microsoft JhengHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #content {
+    font-size: 36px;
+    line-height: 1.6;
+    max-width: 90%;
+    min-height: 300px;
+  }
+
+  img, video, iframe {
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 10px;
+  }
+
+  .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+  }
+
+  button:hover {
+    background: #666;
+  }
+</style>
+</head>
+<body>
+
+<div id="content">點擊「下一頁」開始</div>
+
+<div class="buttons">
+  <button id="prevBtn">上一頁</button>
+  <button id="nextBtn">下一頁</button>
+</div>
+
+<script>
+  // 內容結構：可放文字 / 圖片 / 影片 / YouTube
+  const pages = [
+
+    // 第 1 頁
+    { type: "text", data: `觀看次數：1,388次  2025年12月10日  《閩南語暖心歌房 Podcast》｜女聲版台語情歌、夜晚陪伴
+歡迎來到 「閩南語暖心歌房」。
+這是一張為你精心打造的 10 首原創閩南語女聲專輯——
+溫柔的煙嗓、細膩的情感、滿滿的故事感，陪你走過每一段靜靜的深夜。
+
+這份作品保留了你最愛的音樂氣息：
+✔ 溫柔沙啞的女聲 Vocal（煙嗓、情緒飽滿）
+✔ 72–78 BPM 慢節奏台語情歌
+✔ 吉他 × 絃樂 × 極簡乾淨的伴奏
+✔ 暖心 × 苦情 × 深夜陪伴氛圍
+✔ 100% 原創旋律與歌詞（完全不侵權）...` },
+
+    // 第 2 頁
+    { type: "text", data: `01.《孤單的夜路》00:00:00 
+02.《雨夜的思念》00:02:20
+03.《咱會閣笑啊》00:05:22
+04.《心無影》00:08:57     
+05.《心碎的深夜》00:12:20          
+06.《無講出口的痛》00:16:07     
+07.《無光的所在》00:20:02         
+08.《天光欲來矣》00:24:04            
+09.《沉落的夜風》00:27:56          
+10.《光照落來 ê 時陣》00:32:06
+
+🎤 Vocal Style（女聲特色）
+柔軟、輕沙啞、像在耳邊輕聲交談
+細緻入微的情緒層次
+特別適合唱想念、心事、遺憾
+` },
+
+    // 第 3 頁
+    { type: "text", data: ` 夜深人靜的心事
+‧ 一個人的散步或回家路
+‧ 泡茶、放空、靜下心
+‧ 想念一個人時
+‧ 需要被陪伴的夜
+
+📌 About This Channel｜關於頻道
+「閩南語暖心歌房」專注於：
+✔ 原創閩南語歌曲
+✔ 女聲煙嗓 × 台語情歌
+✔ 暖心 / 苦情 / 陪伴系風格
+✔ 深夜療癒 × Chill × 故事感音樂。
+ ...` },
+
+    // 第 4 頁：圖片
+    { type: "image", data: "https://m-jpg533.github.io/hh/50.jpg" },
+
+    // 第 5 頁：YouTube 影片（已修正）
+    { 
+      type: "youtube",
+      data: "https://www.youtube.com/embed/a7VB2V8eB-E?si=XHijGptd9BxLL8ei" 
+    }
+  ];
+
+  let index = 0;
+
+  function renderPage() {
+    const area = document.getElementById("content");
+    area.innerHTML = ""; // 清空顯示區域
+
+    const page = pages[index];
+
+    if (page.type === "text") {
+      area.innerHTML = page.data;
+    }
+    else if (page.type === "image") {
+      const img = document.createElement("img");
+      img.src = page.data;
+      area.appendChild(img);
+    }
+    else if (page.type === "video") {
+      const video = document.createElement("video");
+      video.src = page.data;
+      video.controls = true;
+      video.autoplay = true;
+      area.appendChild(video);
+    }
+    else if (page.type === "youtube") {
+      const iframe = document.createElement("iframe");
+      iframe.src = page.data;
+      iframe.width = "100%";
+      iframe.height = "400";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      area.appendChild(iframe);
+    }
+  }
+
+  // 下一頁
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (index < pages.length - 1) {
+      index++;
+      renderPage();
+    }
+  });
+
+  // 上一頁
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (index > 0) {
+      index--;
+      renderPage();
+    }
+  });
+
+  // 初始顯示
+  renderPage();
+</script>
+
+</body>
+</html>

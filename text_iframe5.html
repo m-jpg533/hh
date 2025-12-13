@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>再会の夜|時を超えた想い|デュエット｜心のオリジナルソング</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: gold;
+    font-family: "Microsoft JhengHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #content {
+    font-size: 36px;
+    line-height: 1.6;
+    max-width: 90%;
+    min-height: 300px;
+  }
+
+  img, video, iframe {
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 10px;
+  }
+
+  .buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+  }
+
+  button:hover {
+    background: #666;
+  }
+</style>
+</head>
+<body>
+
+<div id="content">點擊「下一頁」開始</div>
+
+<div class="buttons">
+  <button id="prevBtn">上一頁</button>
+  <button id="nextBtn">下一頁</button>
+</div>
+
+<script>
+  // 內容結構：可放文字 / 圖片 / 影片 / YouTube
+  const pages = [
+
+    // 第 1 頁
+    { type: "text", data: `夕陽映照著那一天的景象
+
+我們的笑聲依然鮮活
+我們並肩站在那山坡上
+
+每當我想起，我的心就隱隱作痛
+
+我問自己，那些逝去的日子
+
+我當初選擇的路，是否正確？
+
+我一直徑向前走，
+
+但內心深處，我仍忐忑不安
+
+時光流逝，人也會改變...` },
+
+    // 第 2 頁
+    { type: "text", data: `我繼續尋找那些永恆不變的事物
+
+我在鏡中看到一張蒼老的臉龐
+
+我看到了青春的熱情
+
+這些日子，我為某人而活
+
+曾經有那麼些時候，我迷失了自我
+
+但現在，我感覺我可以說
+
+一切都有意義
+
+我將逝去的日子珍藏在心底
+
+我將我的話語交給仰望的天空
+
+即使淚水即將奪眶而出
+
+我依然向前，繼續前行
+
+還剩下多少天？
+...` },
+
+    // 第 3 頁
+    { type: "text", data: `與其數著日子，我更想表達我的愛
+
+想著某人，也被某人想著
+
+我現在相信，這就是一切
+
+感謝逝去的時光
+
+我不會留下任何遺憾
+
+將你的身體交給靜謐的風
+
+我會再次走向明天
+
+我會再次走向明天
+
+試著跟著旋律哼唱
+
+我想知道我想說什麼
+
+我愛你
+這個詞的意思是什麼？
+
+我想知道我在說什麼
+
+該走了，我想知道
+
+我想知道我在說什麼
+
+這是個好主意
+
+這是個好主意
+
+這是個好主意，這是個好主意
+
+我想知道我想說什麼
+
+我想知道我想說什麼
+
+不好意思打擾了
+
+我想知道我在說什麼
+
+我想知道我想說什麼
+
+我想知道我想說什麼
+
+我想知道我想知道的
+
+這是個好地方
+
+我想知道我在說什麼
+
+這是個好主意
+
+不好意思打擾了，下一頁
+
+我想知道我想知道的
+
+我想知道我想說什麼
+
+這是個好主意，這是個好主意
+
+我想知道我想說什麼
+
+知道很重要
+我想知道我想知道的
+
+這個人叫什麼名字？ 걸어ν。
+ ...` },
+
+    // 第 4 頁：圖片
+    { type: "image", data: "https://m-jpg533.github.io/hh/50.jpg" },
+
+    // 第 5 頁：YouTube 影片（已修正）
+    { 
+      type: "youtube",
+      data: "https://www.youtube.com/embed/k2CH6vNJg0c?si=IEL1O2Wqnj2yM_UK" 
+    }
+  ];
+
+  let index = 0;
+
+  function renderPage() {
+    const area = document.getElementById("content");
+    area.innerHTML = ""; // 清空顯示區域
+
+    const page = pages[index];
+
+    if (page.type === "text") {
+      area.innerHTML = page.data;
+    }
+    else if (page.type === "image") {
+      const img = document.createElement("img");
+      img.src = page.data;
+      area.appendChild(img);
+    }
+    else if (page.type === "video") {
+      const video = document.createElement("video");
+      video.src = page.data;
+      video.controls = true;
+      video.autoplay = true;
+      area.appendChild(video);
+    }
+    else if (page.type === "youtube") {
+      const iframe = document.createElement("iframe");
+      iframe.src = page.data;
+      iframe.width = "100%";
+      iframe.height = "400";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      area.appendChild(iframe);
+    }
+  }
+
+  // 下一頁
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (index < pages.length - 1) {
+      index++;
+      renderPage();
+    }
+  });
+
+  // 上一頁
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (index > 0) {
+      index--;
+      renderPage();
+    }
+  });
+
+  // 初始顯示
+  renderPage();
+</script>
+
+</body>
+</html>

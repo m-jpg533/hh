@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>科幻雙層旋轉播放器</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: #000 url("https://images.unsplash.com/photo-1519681393784-d120267933ba") center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== 主容器 ===== */
+.player {
+  position: relative;
+  width: 360px;
+  height: 360px;
+}
+
+/* ===== 彩色圈 ===== */
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 30px rgba(0,255,255,0.9));
+  animation: spin linear infinite;
+}
+
+.outer {
+  width: 360px;
+  height: 360px;
+  background: url("https://cdn.pixabay.com/animation/2023/03/11/15/47/15-47-31-763_512.gif") center/cover;
+  animation-duration: 6s;
+}
+
+.inner {
+  width: 300px;
+  height: 300px;
+  top: 30px;
+  left: 30px;
+  background: url("https://cdn.pixabay.com/animation/2023/03/11/15/47/15-47-31-763_512.gif") center/cover;
+  animation-duration: 4s;
+  mix-blend-mode: screen;
+}
+
+/* ===== YouTube ===== */
+iframe {
+  position: absolute;
+  top: 70px;
+  left: 70px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  z-index: 5;
+}
+
+/* ===== 播放層 ===== */
+#playLayer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 64px;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* ===== 動畫 ===== */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.beat {
+  animation: beat 0.5s infinite alternate;
+}
+
+@keyframes beat {
+  from { transform: scale(1); }
+  to   { transform: scale(1.07); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="player" id="player">
+
+  <div class="ring outer"></div>
+  <div class="ring inner"></div>
+
+  <!-- 一開始靜音，瀏覽器才放行 -->
+  <iframe id="yt"
+    src="https://www.youtube.com/embed/jPRJSnRfvdo?enablejsapi=1&mute=1"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+  </iframe>
+
+  <div id="playLayer">▶</div>
+</div>
+
+<script>
+const play = document.getElementById("playLayer");
+const yt = document.getElementById("yt");
+const rings = document.querySelectorAll(".ring");
+
+play.onclick = () => {
+  play.style.display = "none";
+
+  // 播放 + 解除靜音
+  yt.contentWindow.postMessage(
+    '{"event":"command","func":"playVideo","args":""}',
+    "*"
+  );
+  yt.contentWindow.postMessage(
+    '{"event":"command","func":"unMute","args":""}',
+    "*"
+  );
+
+  // 節奏跳動
+  rings.forEach(r => r.classList.add("beat"));
+};
+</script>
+
+</body>
+</html>

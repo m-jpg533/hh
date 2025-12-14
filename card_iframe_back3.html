@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>*潮風の駅 ** 二度と帰れぬ故郷 下灘駅</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee") center/cover no-repeat;
+  overflow: hidden;
+  font-family: "Microsoft JhengHei", sans-serif;
+}
+
+/* ===== 中央舞台 ===== */
+.stage {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  transform: translate(-50%, -50%);
+}
+
+/* ===== 彩色圈共用 ===== */
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 25px rgba(0,255,255,0.6));
+}
+
+/* 外圈 */
+.ring.outer {
+  width: 480px;
+  height: 480px;
+  animation: spin 18s linear infinite;
+}
+
+/* 內圈 */
+.ring.inner {
+  width: 400px;
+  height: 400px;
+  animation: spinReverse 10s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes spinReverse {
+  from { transform: translate(-50%, -50%) rotate(360deg); }
+  to   { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+/* ===== 時鐘 ===== */
+.clock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 4px solid green;
+  z-index: 5;
+}
+
+/* 刻度 */
+.num {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: block;
+}
+
+.num span {
+  display: block;
+  margin-top: 8px;
+}
+
+.n1  { transform: rotate(30deg); }
+.n2  { transform: rotate(60deg); }
+.n3  { transform: rotate(90deg); }
+.n4  { transform: rotate(120deg); }
+.n5  { transform: rotate(150deg); }
+.n6  { transform: rotate(180deg); }
+.n7  { transform: rotate(210deg); }
+.n8  { transform: rotate(240deg); }
+.n9  { transform: rotate(270deg); }
+.n10 { transform: rotate(300deg); }
+.n11 { transform: rotate(330deg); }
+.n12 { transform: rotate(0deg); }
+
+/* 指針 */
+.hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: bottom center;
+}
+
+.hour { width: 5px; height: 70px; background: white; }
+.minute { width: 3px; height: 100px; background: #ffcc00; }
+.second { width: 2px; height: 120px; background: red; }
+
+/* 中心點 */
+.center {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ===== 影片 ===== */
+#videoWrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  transform: translate(-50%, -50%) scale(0.6);
+  opacity: 0;
+  transition: 2s ease;
+  z-index: 20;
+}
+
+#videoWrap.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+iframe {
+  width: 90%;
+  height: 90%;
+  border-radius: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="stage">
+
+  <!-- 彩色圈 -->
+  <img class="ring outer"
+    src="https://cdn.pixabay.com/animation/2023/03/11/15/47/15-47-31-763_512.gif">
+  <img class="ring inner"
+    src="https://cdn.pixabay.com/animation/2023/03/11/15/47/15-47-31-763_512.gif">
+
+  <!-- 時鐘 -->
+  <div class="clock" id="clock">
+    <div class="num n1"><span>1</span></div>
+    <div class="num n2"><span>2</span></div>
+    <div class="num n3"><span>3</span></div>
+    <div class="num n4"><span>4</span></div>
+    <div class="num n5"><span>5</span></div>
+    <div class="num n6"><span>6</span></div>
+    <div class="num n7"><span>7</span></div>
+    <div class="num n8"><span>8</span></div>
+    <div class="num n9"><span>9</span></div>
+    <div class="num n10"><span>10</span></div>
+    <div class="num n11"><span>11</span></div>
+    <div class="num n12"><span>12</span></div>
+
+    <div class="hand hour" id="hour"></div>
+    <div class="hand minute" id="minute"></div>
+    <div class="hand second" id="second"></div>
+    <div class="center"></div>
+  </div>
+
+  <!-- 影片 -->
+  <div id="videoWrap">
+    <iframe id="yt"
+      allow="autoplay; encrypted-media"
+      allowfullscreen></iframe>
+  </div>
+
+</div>
+
+<script>
+/* ===== 時鐘運作 ===== */
+function updateClock() {
+  const d = new Date();
+  const s = d.getSeconds();
+  const m = d.getMinutes();
+  const h = d.getHours() % 12;
+
+  second.style.transform = `rotate(${s * 6}deg)`;
+  minute.style.transform = `rotate(${m * 6 + s * 0.1}deg)`;
+  hour.style.transform = `rotate(${h * 30 + m * 0.5}deg)`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ===== 10 秒後顯示影片 ===== */
+setTimeout(() => {
+  clock.style.opacity = "0";
+  document.getElementById("videoWrap").classList.add("show");
+  yt.src = "https://www.youtube.com/embed/qejlfPxLghw?si=EHOnjqsFlp5VvWj1";
+}, 10000);
+</script>
+
+</body>
+</html>

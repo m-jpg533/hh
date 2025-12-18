@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名曲牆・圓形 Shorts 播放器</title>
+
+<style>
+:root{
+  --bg:#000;
+  --outer:#ff0080;
+  --inner:#00ffff;
+}
+
+/* ===== 基本 ===== */
+body{
+  margin:0;
+  height:100vh;
+  background:radial-gradient(circle,var(--bg),#000);
+  font-family:"Microsoft JhengHei",sans-serif;
+  color:white;
+  overflow:hidden;
+  transition:.6s;
+}
+
+/* ===== 模式按鈕 ===== */
+#modes{
+  position:fixed;
+  top:10px;
+  right:10px;
+  z-index:50;
+}
+#modes button{
+  margin:2px;
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* ===== 播放區 ===== */
+.player{
+  height:70vh;
+  position:relative;
+}
+
+/* ===== 圈圈 ===== */
+.ring{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+}
+
+.outer{
+  width:420px;height:420px;
+  background:conic-gradient(var(--outer),var(--inner),var(--outer));
+  filter:blur(14px);
+  animation:spin 12s linear infinite;
+}
+
+.inner{
+  width:360px;height:360px;
+  background:conic-gradient(var(--inner),var(--outer),var(--inner));
+  filter:blur(8px);
+  animation:spin 4s linear infinite reverse;
+}
+
+/* ===== 影片圓形遮罩 ===== */
+.videoMask{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:300px;
+  height:300px;
+  border-radius:50%;
+  overflow:hidden;
+  z-index:5;
+  background:black;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+  border:none;
+}
+
+/* ===== 播完遮罩 ===== */
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:22px;
+  opacity:0;
+  pointer-events:none;
+  transition:.4s;
+}
+.overlay.show{
+  opacity:1;
+  pointer-events:auto;
+  cursor:pointer;
+}
+
+/* ===== 清單 ===== */
+.list{
+  height:30vh;
+  display:flex;
+  gap:16px;
+  padding:16px;
+  overflow-x:auto;
+}
+.card{
+  min-width:180px;
+  padding:12px;
+  background:rgba(255,255,255,.1);
+  border-radius:12px;
+  cursor:pointer;
+}
+.card:hover{background:rgba(255,255,255,.2)}
+
+@keyframes spin{
+  from{transform:translate(-50%,-50%) rotate(0)}
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- 模式 -->
+<div id="modes">
+  <button onclick="setMode('neon')">霓虹</button>
+  <button onclick="setMode('heal')">療癒</button>
+  <button onclick="setMode('sci')">科幻</button>
+</div>
+
+<div class="player">
+  <div class="ring outer"></div>
+  <div class="ring inner"></div>
+
+  <div class="videoMask">
+    <iframe id="yt" allow="autoplay; encrypted-media"></iframe>
+  </div>
+
+  <div class="overlay" id="overlay">▶ 下一首</div>
+</div>
+
+<div class="list" id="list"></div>
+
+<script>
+/* ===== 影片清單 ===== */
+const videos=[
+ {title:"台語經典 1", id:"jSaRUPIsDIA", dur:180},
+ {title:"台語經典 2", id:"bKe8eohEfTQ", dur:200},
+ {title:"台語經典 3", id:"6J6UyVgzERg", dur:190}
+];
+
+let index=0,timer;
+const yt=document.getElementById("yt");
+const overlay=document.getElementById("overlay");
+const list=document.getElementById("list");
+
+/* 播放 */
+function play(i){
+  clearTimeout(timer);
+  overlay.classList.remove("show");
+  yt.src=`https://www.youtube.com/embed/${videos[i].id}?autoplay=1&mute=0`;
+  timer=setTimeout(()=>overlay.classList.add("show"),videos[i].dur*1000);
+}
+
+/* 下一首 */
+overlay.onclick=()=>{
+  index=(index+1)%videos.length;
+  play(index);
+};
+
+/* 建清單 */
+videos.forEach((v,i)=>{
+  const d=document.createElement("div");
+  d.className="card";
+  d.textContent=v.title;
+  d.onclick=()=>{index=i;play(i)};
+  list.appendChild(d);
+});
+
+/* 模式 */
+function setMode(m){
+  if(m==="neon"){
+    document.documentElement.style.setProperty("--bg","#020024");
+    document.documentElement.style.setProperty("--outer","#ff0080");
+    document.documentElement.style.setProperty("--inner","#00ffff");
+  }
+  if(m==="heal"){
+    document.documentElement.style.setProperty("--bg","#0a2a2a");
+    document.documentElement.style.setProperty("--outer","#88ffcc");
+    document.documentElement.style.setProperty("--inner","#ccffee");
+  }
+  if(m==="sci"){
+    document.documentElement.style.setProperty("--bg","#000");
+    document.documentElement.style.setProperty("--outer","#00ff00");
+    document.documentElement.style.setProperty("--inner","#00aa00");
+  }
+}
+
+/* 預設 */
+setMode("neon");
+</script>
+
+</body>
+</html>

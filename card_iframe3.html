@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>無情的人</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: "Microsoft JhengHei", sans-serif;
+}
+
+/* ===== 開始按鈕 ===== */
+#startBtn {
+  position: absolute;
+  z-index: 100;
+  padding: 18px 36px;
+  font-size: 22px;
+  border-radius: 12px;
+  border: none;
+  background: #ffcc00;
+  cursor: pointer;
+}
+
+/* ===== 彩色圈容器 ===== */
+.ring-wrap {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 2s ease;
+  z-index: 1;
+}
+
+/* ===== 外圈 ===== */
+.ring.outer {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #00ffff, #0066ff, #cc00ff, #ff0066, #ffcc00, #00ffff
+  );
+  animation: spinOuter 10s linear infinite;
+  filter: drop-shadow(0 0 20px #00ffff);
+}
+
+.ring.outer::after {
+  content: "";
+  position: absolute;
+  inset: 22px;
+  background: black;
+  border-radius: 50%;
+}
+
+/* ===== 內圈 ===== */
+.ring.inner {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #ff00ff, #00ff99, #00ccff, #ff00ff
+  );
+  animation: spinInner 4s linear infinite reverse;
+  filter: drop-shadow(0 0 15px #ff00ff);
+}
+
+.ring.inner::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  background: black;
+  border-radius: 50%;
+}
+
+@keyframes spinOuter {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes spinInner {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ===== 時鐘 ===== */
+.clock {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  border: 6px solid white;
+  z-index: 10;
+  transition: opacity 1.5s;
+}
+
+.num {
+  position: absolute;
+  font-size: 26px;
+  color: white;
+  font-weight: bold;
+}
+
+.n12 { top: 8px; left: 50%; transform: translateX(-50%); }
+.n3 { right: 8px; top: 50%; transform: translateY(-50%); }
+.n6 { bottom: 8px; left: 50%; transform: translateX(-50%); }
+.n9 { left: 8px; top: 50%; transform: translateY(-50%); }
+
+.n1 { top: 35px; right: 95px; }
+.n2 { top: 95px; right: 35px; }
+.n4 { bottom: 95px; right: 35px; }
+.n5 { bottom: 35px; right: 95px; }
+.n7 { bottom: 35px; left: 95px; }
+.n8 { bottom: 95px; left: 35px; }
+.n10 { top: 95px; left: 35px; }
+.n11 { top: 35px; left: 95px; }
+
+/* 指針 */
+.hand {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center bottom;
+}
+
+.hour {
+  width: 6px;
+  height: 70px;
+  background: red;
+  transform: translate(-50%, -100%);
+  animation: spinH 12s linear infinite;
+}
+
+.minute {
+  width: 4px;
+  height: 110px;
+  background: yellow;
+  transform: translate(-50%, -100%);
+  animation: spinM 6s linear infinite;
+}
+
+@keyframes spinH {
+  to { transform: translate(-50%, -100%) rotate(360deg); }
+}
+@keyframes spinM {
+  to { transform: translate(-50%, -100%) rotate(360deg); }
+}
+
+/* ===== 影片 ===== */
+#videoWrap {
+  display: none;
+  z-index: 5;
+}
+
+iframe {
+  width: 220px;
+  height: 220px;
+  border-radius: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<button id="startBtn">▶ 開始</button>
+
+<div class="ring-wrap" id="ringWrap">
+  <div class="ring outer"></div>
+  <div class="ring inner"></div>
+</div>
+
+<div class="clock" id="clock">
+  <div class="num n1">1</div><div class="num n2">2</div>
+  <div class="num n3">3</div><div class="num n4">4</div>
+  <div class="num n5">5</div><div class="num n6">6</div>
+  <div class="num n7">7</div><div class="num n8">8</div>
+  <div class="num n9">9</div><div class="num n10">10</div>
+  <div class="num n11">11</div><div class="num n12">12</div>
+  <div class="hand hour"></div>
+  <div class="hand minute"></div>
+</div>
+
+<div id="videoWrap">
+  <iframe id="yt" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+
+<script>
+const btn = document.getElementById("startBtn");
+const clock = document.getElementById("clock");
+const wrap = document.getElementById("videoWrap");
+const yt = document.getElementById("yt");
+const ringWrap = document.getElementById("ringWrap");
+
+btn.onclick = () => {
+  btn.style.display = "none";
+
+  // 模擬音樂節奏跳動
+  setInterval(() => {
+    const scale = 0.98 + Math.random() * 0.07;
+    ringWrap.style.transform = `scale(${scale})`;
+  }, 300);
+
+  setTimeout(() => {
+    clock.style.opacity = "0";
+
+    setTimeout(() => {
+      clock.style.display = "none";
+      wrap.style.display = "block";
+      ringWrap.style.transform = "scale(1.2)";
+      yt.src = "https://www.youtube.com/embed/llXoJZyfySg?si=-oEX67291t1bulEI";
+    }, 1500);
+  }, 8000);
+};
+</script>
+
+</body>
+</html>

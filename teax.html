@@ -1,0 +1,118 @@
+
+ 
+ <!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名曲整合播放牆</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Microsoft JhengHei", sans-serif;
+  color: #fff;
+  background: #000;
+  text-align: center;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 20px;
+  margin: 5px;
+}
+
+body.neon { background: radial-gradient(circle, #111, #000); }
+body.heal { background: linear-gradient(120deg,#2b5876,#4e4376); }
+body.sci  { background: linear-gradient(120deg,#000428,#004e92); }
+
+.neon button { color:#0ff; background:#111; box-shadow:0 0 10px #0ff; }
+.heal button { color:#fff; background:rgba(255,255,255,.2); }
+.sci button  { color:#0f0; background:#000; border:1px solid #0f0; }
+
+#wave {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0;
+}
+
+.bar {
+  width: 6px;
+  height: 20px;
+  background: #0ff;
+  animation: wave 1s infinite ease-in-out;
+}
+
+.bar:nth-child(2){animation-delay:.1s}
+.bar:nth-child(3){animation-delay:.2s}
+.bar:nth-child(4){animation-delay:.3s}
+.bar:nth-child(5){animation-delay:.4s}
+
+@keyframes wave {
+  0%,100%{height:20px}
+  50%{height:60px}
+}
+
+.player {
+  max-width: 560px;
+  margin: 20px auto;
+}
+
+iframe {
+  width: 100%;
+  height: 315px;
+  border-radius: 16px;
+  border: none;
+}
+</style>
+</head>
+
+<body class="neon">
+
+<!-- 模式 -->
+<div>
+  <button onclick="setMode('neon')">霓虹</button>
+  <button onclick="setMode('heal')">療癒</button>
+  <button onclick="setMode('sci')">科幻</button>
+</div>
+
+<!-- 音波 -->
+<div id="wave">
+  <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  <div class="bar"></div><div class="bar"></div>
+</div>
+
+<!-- 歌曲 -->
+<div class="playlist">
+  <button onclick="play('3ytqyuQ9EKo')">名曲一</button>
+  <button onclick="play('HVw7nTOK058')">名曲二</button>
+  <button onclick="play('-8yR3j3iQ94')">名曲三</button>
+</div>
+
+<!-- 播放器 -->
+<div class="player">
+  <iframe id="yt" allow="autoplay; encrypted-media"></iframe>
+</div>
+
+<script>
+function play(id){
+  const yt = document.getElementById("yt");
+
+  yt.src =
+    "https://www.youtube.com/embed/" + id +
+    "?autoplay=1" +
+    "&loop=1" +
+    "&playlist=" + id +   // 🔑 循環關鍵
+    "&rel=0";
+}
+
+function setMode(m){
+  document.body.className = m;
+}
+</script>
+
+</body>
+</html>

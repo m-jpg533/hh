@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>公款紀錄表</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 15px;
+}
+
+th, td {
+  border: 1px solid #888;
+  padding: 6px;
+  text-align: center;
+}
+
+input {
+  margin: 5px 0;
+  padding: 5px;
+  width: 200px;
+}
+button {
+  padding: 8px 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h3>公款紀錄</h3>
+
+姓名：
+<input id="username" type="text"><br>
+
+總額：
+<input id="lumpSum" type="text"><br>
+
+付款：
+<input id="payment" type="text"><br>
+
+剩款：
+<input id="remainingAmount" type="text"><br>
+
+私人預付公款：
+<input id="privatePrepayment" type="text"><br>
+
+公款還私人：
+<input id="publicRepay" type="text"><br>
+
+日期：
+<input id="date" type="date"><br>
+
+<button onclick="saveRecord()">儲存紀錄</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>姓名</th>
+      <th>總額</th>
+      <th>付款</th>
+      <th>剩款</th>
+      <th>私人預付公款</th>
+      <th>公款還私人</th>
+      <th>日期</th>
+      <th>建立時間</th>
+      <th>刪除</th>
+    </tr>
+  </thead>
+  <tbody id="log"></tbody>
+</table>
+
+<script>
+// 儲存紀錄
+function saveRecord() {
+  const record = {
+    name: document.getElementById("username").value,
+    lumpSum: document.getElementById("lumpSum").value,
+    payment: document.getElementById("payment").value,
+    remainingAmount: document.getElementById("remainingAmount").value,
+    privatePrepayment: document.getElementById("privatePrepayment").value,
+    publicRepay: document.getElementById("publicRepay").value,
+    date: document.getElementById("date").value,
+    time: new Date().toLocaleString()
+  };
+
+  let data = JSON.parse(localStorage.getItem("records")) || [];
+  data.push(record);
+  localStorage.setItem("records", JSON.stringify(data));
+
+  render();
+  clearInputs();
+}
+
+// 清空輸入框
+function clearInputs() {
+  document.getElementById("username").value = "";
+  document.getElementById("lumpSum").value = "";
+  document.getElementById("payment").value = "";
+  document.getElementById("remainingAmount").value = "";
+  document.getElementById("privatePrepayment").value = "";
+  document.getElementById("publicRepay").value = "";
+  document.getElementById("date").value = "";
+}
+
+// 刪除紀錄
+function deleteRecord(index) {
+  if (!confirm("確定刪除這筆紀錄？")) return;
+
+  let data = JSON.parse(localStorage.getItem("records")) || [];
+  data.splice(index, 1);
+  localStorage.setItem("records", JSON.stringify(data));
+
+  render();
+}
+
+// 渲染表格
+function render() {
+  const tbody = document.getElementById("log");
+  tbody.innerHTML = "";
+
+  const data = JSON.parse(localStorage.getItem("records")) || [];
+  data.forEach((r, index) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${r.name}</td>
+        <td>${r.lumpSum}</td>
+        <td>${r.payment}</td>
+        <td>${r.remainingAmount}</td>
+        <td>${r.privatePrepayment}</td>
+        <td>${r.publicRepay}</td>
+        <td>${r.date}</td>
+        <td>${r.time}</td>
+        <td>
+          <button onclick="deleteRecord(${index})">🗑️</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// 初次渲染
+render();
+</script>
+
+</body>
+</html>

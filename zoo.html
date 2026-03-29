@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>🦞 最終版龍蝦養殖遊戲</title>
+
+<style>
+body { text-align:center; font-family:Arial; background:#a0e0ff; }
+
+#tank {
+  width: 900px;
+  height: 450px;
+  margin: 20px auto;
+  background: linear-gradient(#1a8cff,#0066cc);
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.lobster {
+  position:absolute;
+  bottom:20px;
+  width:60px;
+  transition:left 0.2s;
+}
+
+.food {
+  width:15px;
+  height:15px;
+  background:orange;
+  border-radius:50%;
+  position:absolute;
+}
+
+#ui { margin:10px; }
+button { padding:8px 12px; margin:5px; }
+
+.bar { width:120px;height:8px;background:#ccc;margin:2px auto;}
+.fill { height:100%; }
+</style>
+</head>
+
+<body>
+
+<h2>🦞 龍蝦養殖最終版</h2>
+
+<div id="ui">
+  💰金幣：<span id="money">0</span>
+  🍗食物：<span id="food">20</span><br>
+  <button onclick="feedMany()">狂餵</button>
+</div>
+
+<div id="tank"></div>
+<div id="status"></div>
+
+<script>
+const tank=document.getElementById("tank");
+const statusDiv=document.getElementById("status");
+
+let foods=[];
+let foodStock=20;
+let money=0;
+
+const foodUI=document.getElementById("food");
+const moneyUI=document.getElementById("money");
+
+class Lobster{
+  constructor(x){
+    this.x=x;
+    this.hunger=20;
+    this.health=100;
+    this.growth=0;
+    this.dir=1;
+    this.alive=true;
+
+    this.el=document.createElement("img");
+    this.el.src="https://m-jpg533.github.io/hh/red-lobster-cartoon-sticker.png";
+    this.el.className="lobster";
+    tank.appendChild(this.el);
+
+    this.ui=document.createElement("div");
+    statusDiv.appendChild(this.ui);
+  }
+
+  updateUI(){
+    this.ui.innerHTML=`
+    🦞
+    <div class="bar"><div class="fill" style="width:${this.hunger}%;background:red"></div></div>
+    <div class="bar"><div class="fill" style="width:${this.health}%;background:green"></div></div>
+    <div class="bar"><div class="fill" style="width:${this.growth}%;background:lime"></div></div>
+    `;
+
+    this.el.style.left=this.x+"px";
+    this.el.style.width=(60+this.growth*0.5)+"px";
+    this.el.style.transform=`scaleX(${this.dir})`;
+    this.el.style.opacity=this.alive?1:0.2;
+  }
+
+  move(){
+    if(!this.alive) return;
+
+    let target=null,min=9999;
+    foods.forEach(f=>{
+      let d=Math.abs(f.x-this.x);
+      if(d<min){min=d;target=f;}
+    });
+
+    let speed=this.hunger>80?1:3;
+
+    if(target){
+      this.dir=target.x>this.x?1:-1;
+      this.x+=(target.x-this.x)*0.05;
+
+      if(Math.abs(this.x-target.x)<15){
+        this.hunger-=30;
+        this.growth+=5;
+        money+=5;
+        target.el.remove();
+        foods.splice(foods.indexOf(target),1);
+      }
+    }else{
+      this.x+=(Math.random()-0.5)*speed;
+    }
+
+    if(this.x<0)this.x=0;
+    if(this.x>860)this.x=860;
+  }
+
+  tick(){
+    if(!this.alive) return;
+
+    this.hunger+=2;
+
+    if(this.hunger>90) this.health-=3;
+    if(this.hunger<40) this.health+=1;
+    if(this.health>60) this.growth+=1;
+
+    if(this.health<=0){
+      this.alive=false;
+    }
+
+    this.hunger=Math.min(100,this.hunger);
+    this.health=Math.max(0,this.health);
+    this.growth=Math.min(100,this.growth);
+
+    this.move();
+    this.updateUI();
+  }
+}
+
+// 初始龍蝦
+let lobsters=[
+  new Lobster(100),
+  new Lobster(300),
+  new Lobster(500)
+];
+
+// 掉食物
+function dropFood(x){
+  if(foodStock<=0) return;
+
+  foodStock--;
+  foodUI.innerText=foodStock;
+
+  let f=document.createElement("div");
+  f.className="food";
+  f.style.left=x+"px";
+  f.style.top="0px";
+  tank.appendChild(f);
+
+  let obj={el:f,x:x,y:0};
+  foods.push(obj);
+
+  let fall=setInterval(()=>{
+    obj.y+=5;
+    f.style.top=obj.y+"px";
+    if(obj.y>430){
+      f.remove();
+      foods.splice(foods.indexOf(obj),1);
+      clearInterval(fall);
+    }
+  },50);
+}
+
+// 點擊餵食
+tank.onclick=e=>dropFood(e.offsetX);
+
+// 狂餵
+function feedMany(){
+  for(let i=0;i<8;i++){
+    dropFood(Math.random()*880);
+  }
+}
+
+// 自動補食物
+setInterval(()=>{
+  foodStock++;
+  foodUI.innerText=foodStock;
+},3000);
+
+// 繁殖
+setInterval(()=>{
+  if(lobsters.length<10){
+    let l=new Lobster(Math.random()*800);
+    lobsters.push(l);
+  }
+},15000);
+
+// 主循環
+setInterval(()=>{
+  lobsters.forEach(l=>l.tick());
+  moneyUI.innerText=money;
+},1000);
+
+</script>
+
+</body>
+</html>

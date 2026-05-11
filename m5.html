@@ -1,0 +1,469 @@
+<!-- <!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>影片 + 廣告 正確版</title>
+
+<style>
+
+body{
+    margin:0;
+    height:100vh;
+    background:black;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* ===== 時鐘（開場畫面） ===== */
+.clock{
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    border:8px solid white;
+    position:absolute;
+    overflow:hidden;
+    z-index:10;
+}
+
+.clock img{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+}
+
+/* 指針 */
+.hand{
+    position:absolute;
+    width:6px;
+    left:50%;
+    top:50%;
+    transform-origin:50% 100%;
+}
+
+.hour{
+    height:60px;
+    background:red;
+    animation:spin 12s linear infinite;
+}
+
+.minute{
+    height:90px;
+    background:yellow;
+    animation:spin 6s linear infinite;
+}
+
+@keyframes spin{
+    from{transform:translate(-50%, -100%) rotate(0deg);}
+    to{transform:translate(-50%, -100%) rotate(360deg);}
+}
+
+/* ===== 影片（唯一主畫面） ===== */
+video{
+    width:100%;
+    max-width:450px;
+    border-radius:20px;
+    display:none;
+    z-index:1;
+}
+
+/* ===== 開始按鈕 ===== */
+#startBtn{
+    position:absolute;
+    z-index:100;
+    padding:15px 30px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    background:#ffcc00;
+    cursor:pointer;
+}
+
+/* ===== 廣告（固定右下） ===== */
+#ad-box{
+    position:fixed;
+    top:15px;
+    right:15px;
+    width:200px;
+    height:100px;
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    z-index:999;
+    box-shadow:0 0 15px rgba(0,0,0,0.5);
+}
+
+/* X 按鈕 */
+#closeAd{
+    position:absolute;
+    top:5px;
+    right:5px;
+    width:30px;
+    height:30px;
+    background:red;
+    color:white;
+    border:none;
+    cursor:pointer;
+    z-index:1000;
+}
+
+#adFrame{
+    width:100%;
+    height:100%;
+    border:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 開始按鈕 -->
+<button id="startBtn">▶ 點這裡開始</button>
+
+<!-- 時鐘 -->
+<div class="clock" id="clock">
+
+    <img src="https://m-jpg533.github.io/ox/35.jpg">
+
+    <div class="hand hour"></div>
+    <div class="hand minute"></div>
+
+</div>
+
+<!-- 影片 -->
+<video id="video"
+controls
+playsinline
+src="https://m-jpg533.github.io/hh/70.mp4">
+</video>
+
+<!-- 廣告 -->
+<div id="ad-box">
+
+    <button id="closeAd">X</button>
+
+    <iframe
+        id="adFrame"
+       src="https://m-jpg533.github.io/hh/68.mp4">
+    </iframe>
+
+</div>
+
+<script>
+
+const btn = document.getElementById("startBtn");
+const clock = document.getElementById("clock");
+const video = document.getElementById("video");
+
+/* 開始 */
+btn.onclick = async () => {
+
+    btn.remove();        // 刪掉按鈕（避免干擾）
+    clock.remove();      // ⭐ 關鍵：直接刪掉時鐘（避免雙畫面）
+
+    video.style.display = "block";
+
+    try {
+        await video.play();
+    } catch (e) {
+        console.log(e);
+    }
+
+};
+
+/* 關閉廣告 */
+document.getElementById("closeAd").onclick = () => {
+    document.getElementById("ad-box").style.display = "none";
+};
+
+</script>
+
+</body>
+</html> -->     
+
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>影片 + 廣告 最穩定版</title>
+
+<style>
+
+body{
+    margin:0;
+    background:black;
+    height:100vh;
+    overflow:hidden;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* ===== 開場時鐘 ===== */
+.clock{
+    width:300px;
+    height:300px;
+
+    border-radius:50%;
+    border:8px solid white;
+
+    overflow:hidden;
+
+    position:absolute;
+    z-index:10;
+}
+
+.clock img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+}
+
+/* 指針 */
+.hand{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform-origin:50% 100%;
+    width:6px;
+}
+
+.hour{
+    height:60px;
+    background:red;
+    animation:spin 12s linear infinite;
+}
+
+.minute{
+    height:90px;
+    background:yellow;
+    animation:spin 6s linear infinite;
+}
+
+@keyframes spin{
+
+    from{
+        transform:translate(-50%, -100%) rotate(0deg);
+    }
+
+    to{
+        transform:translate(-50%, -100%) rotate(360deg);
+    }
+
+}
+
+/* ===== 開始按鈕 ===== */
+#startBtn{
+
+    position:absolute;
+    z-index:100;
+
+    padding:15px 30px;
+
+    font-size:22px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#ffcc00;
+
+    cursor:pointer;
+}
+
+/* ===== 主影片 ===== */
+#video{
+
+    width:100%;
+    max-width:450px;
+
+    border-radius:20px;
+
+    display:none;
+
+    z-index:1;
+
+    background:black;
+}
+
+/* ===== 廣告 ===== */
+#ad-box{
+
+    position:fixed;
+
+    top:90px;      /* ⭐ 往下移，避免擋頭 */
+
+    right:10px;
+
+    width:180px;
+    height:100px;
+
+    background:black;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    z-index:9999;
+
+    box-shadow:0 0 15px rgba(0,0,0,0.6);
+}
+
+/* 廣告影片 */
+#adVideo{
+    
+    width:100%;
+    height:120%;
+
+    object-fit:cover;
+
+    pointer-events:none;   /* ⭐ 關鍵：讓 X 可以按 */
+}
+
+/* ===== X 按鈕 ===== */
+#closeAd{
+
+    position:absolute;
+
+    top:5px;
+    right:5px;
+
+    width:32px;
+    height:32px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:red;
+    color:white;
+
+    font-size:18px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    z-index:10000;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 開始按鈕 -->
+<button id="startBtn">
+▶ 點這裡開始
+</button>
+
+<!-- 時鐘 -->
+<div class="clock" id="clock">
+
+    <img src="https://m-jpg533.github.io/ox/35.jpg">
+
+    <div class="hand hour"></div>
+    <div class="hand minute"></div>
+
+</div>
+
+<!-- 主影片 -->
+<video
+    id="video"
+    controls
+    playsinline
+    webkit-playsinline
+    preload="auto">
+
+    <source
+        src="https://m-jpg533.github.io/hh/70.mp4"
+        type="video/mp4">
+
+</video>
+
+<!-- 廣告 -->
+<div id="ad-box">
+
+    <button id="closeAd">✕</button>
+
+    <video
+        id="adVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline>
+
+        <source
+            src="https://m-jpg533.github.io/hh/68.mp4"
+            type="video/mp4">
+
+    </video>
+
+</div>
+
+<script>
+
+const btn = document.getElementById("startBtn");
+const clock = document.getElementById("clock");
+
+const video = document.getElementById("video");
+const adVideo = document.getElementById("adVideo");
+
+/* ===== 開始 ===== */
+btn.onclick = async () => {
+
+    /* 刪掉按鈕 */
+    btn.remove();
+
+    /* 刪掉時鐘 */
+    clock.remove();
+
+    /* 顯示主影片 */
+    video.style.display = "block";
+
+    try{
+
+        /* 主影片播放（有聲） */
+        video.muted = false;
+
+        await video.play();
+
+    }catch(err){
+
+        console.log(err);
+
+    }
+
+};
+
+/* ===== 廣告點一下開聲音 ===== */
+adVideo.addEventListener("click", () => {
+
+    adVideo.muted = false;
+
+    adVideo.play();
+
+});
+
+/* ===== 關閉廣告 ===== */
+document
+.getElementById("closeAd")
+.onclick = () => {
+
+    document
+    .getElementById("ad-box")
+    .style.display = "none";
+
+};
+
+</script>
+
+</body>
+</html>

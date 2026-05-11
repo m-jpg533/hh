@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+
+<!-- ⭐ 手機全螢幕重要 -->
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>手機穩定版</title>
+
+<style>
+
+html,body{
+    margin:0;
+    padding:0;
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    background:black;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* ===== 主影片 ===== */
+#video{
+
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+
+    background:black;
+
+    display:none;
+
+    z-index:1;
+}
+
+/* ===== 開始按鈕 ===== */
+#startBtn{
+
+    position:absolute;
+
+    z-index:9999;
+
+    padding:16px 35px;
+
+    font-size:24px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#ffcc00;
+
+    color:black;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+/* ===== 廣告 ===== */
+#ad-box{
+
+    position:fixed;
+
+    top:100px;     /* ⭐ 往下 */
+
+    right:10px;
+
+    width:160px;
+    height:90px;
+
+    background:black;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    z-index:99999;
+
+    box-shadow:0 0 15px rgba(0,0,0,0.6);
+}
+
+/* 廣告影片 */
+#adVideo{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+}
+
+/* ===== 關閉按鈕 ===== */
+#closeAd{
+
+    position:absolute;
+
+    top:5px;
+    right:5px;
+
+    width:32px;
+    height:32px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:red;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    z-index:100000;
+
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ===== 開始按鈕 ===== -->
+<button id="startBtn">
+▶ 開始播放
+</button>
+
+<!-- ===== 主影片 ===== -->
+<video
+    id="video"
+    controls
+    preload="auto"
+    playsinline
+    webkit-playsinline>
+
+    <source
+        src="https://m-jpg533.github.io/hh/70.mp4"
+        type="video/mp4">
+
+</video>
+
+<!-- ===== 廣告 ===== -->
+<div id="ad-box">
+
+    <button id="closeAd">✕</button>
+
+    <video
+        id="adVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline>
+
+        <source
+            src="https://m-jpg533.github.io/hh/68.mp4"
+            type="video/mp4">
+
+    </video>
+
+</div>
+
+<script>
+
+/* ===== 元件 ===== */
+const startBtn = document.getElementById("startBtn");
+
+const video = document.getElementById("video");
+
+const adVideo = document.getElementById("adVideo");
+
+/* ===== 手機播放 ===== */
+startBtn.addEventListener("click", async () => {
+
+    startBtn.style.display = "none";
+
+    video.style.display = "block";
+
+    try{
+
+        /* ⭐ 主影片有聲 */
+        video.muted = false;
+
+        await video.play();
+
+    }catch(err){
+
+        console.log("播放失敗:", err);
+
+    }
+
+});
+
+/* ===== 關閉廣告 ===== */
+document
+.getElementById("closeAd")
+.addEventListener("click", () => {
+
+    document
+    .getElementById("ad-box")
+    .style.display = "none";
+
+});
+
+</script>
+
+</body>
+</html>

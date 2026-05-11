@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>手機影片 + 橫式廣告</title>
+
+<style>
+
+html,body{
+
+    margin:0;
+    padding:0;
+
+    width:100%;
+    height:100%;
+
+    background:black;
+
+    overflow:hidden;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* ===== 主影片 ===== */
+#video{
+
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+
+    background:black;
+
+    display:none;
+}
+
+/* ===== 開始按鈕 ===== */
+#startBtn{
+
+    position:absolute;
+
+    z-index:99999;
+
+    padding:16px 35px;
+
+    font-size:24px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#ffcc00;
+
+    color:black;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+/* ===== 橫式廣告 ===== */
+#bannerAd{
+
+    position:fixed;
+
+    bottom:10px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:95%;
+
+    max-width:520px;
+
+    height:90px;
+
+    background:black;
+
+    border-radius:14px;
+
+    overflow:hidden;
+
+    z-index:999999;
+
+    box-shadow:0 0 15px rgba(0,0,0,0.6);
+}
+
+/* 廣告影片 */
+#bannerVideo{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+}
+
+/* ===== X 關閉按鈕 ===== */
+#closeBanner{
+
+    position:absolute;
+
+    top:5px;
+    right:5px;
+
+    width:32px;
+    height:32px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:red;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    z-index:1000000;
+
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ===== 開始按鈕 ===== -->
+<button id="startBtn">
+▶ 開始播放
+</button>
+
+<!-- ===== 主影片 ===== -->
+<video
+    id="video"
+    controls
+    preload="auto"
+    playsinline
+    webkit-playsinline>
+
+    <source
+        src="https://m-jpg533.github.io/hh/70.mp4"
+        type="video/mp4">
+
+</video>
+
+<!-- ===== 橫式廣告 ===== -->
+<div id="bannerAd">
+
+    <!-- X -->
+    <button id="closeBanner">✕</button>
+
+    <!-- 廣告影片 -->
+    <video
+        id="bannerVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline>
+
+        <source
+            src="https://m-jpg533.github.io/hh/68.mp4"
+            type="video/mp4">
+
+    </video>
+
+</div>
+
+<script>
+
+/* ===== 元件 ===== */
+const startBtn = document.getElementById("startBtn");
+
+const video = document.getElementById("video");
+
+/* ===== 開始播放 ===== */
+startBtn.addEventListener("click", async () => {
+
+    /* 隱藏按鈕 */
+    startBtn.style.display = "none";
+
+    /* 顯示主影片 */
+    video.style.display = "block";
+
+    try{
+
+        /* 主影片有聲 */
+        video.muted = false;
+
+        await video.play();
+
+    }catch(err){
+
+        console.log("播放失敗:", err);
+
+    }
+
+});
+
+/* ===== 關閉橫式廣告 ===== */
+document
+.getElementById("closeBanner")
+.addEventListener("click", () => {
+
+    document
+    .getElementById("bannerAd")
+    .style.display = "none";
+
+});
+
+</script>
+
+</body>
+</html>

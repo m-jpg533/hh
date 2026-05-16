@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自動播放影片</title>
+
+<style>
+
+body{
+    margin:0;
+    background:black;
+    height:100vh;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* 主影片 */
+video{
+    width:100%;
+    max-width:500px;
+    border-radius:20px;
+}
+
+/* 廣告 */
+#ad{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:80px;
+    background:white;
+    z-index:9999;
+}
+
+/* 廣告影片 */
+#ad video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* 提示 */
+#hint{
+    position:absolute;
+    color:white;
+    font-size:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="hint">點任意地方開啟聲音</div>
+
+<!-- 主影片（自動播放） -->
+<video id="mainVideo" autoplay muted playsinline>
+    <source src="https://m-jpg533.github.io/hh/100.mp4">
+</video>
+
+<!-- 廣告 -->
+<div id="ad">
+
+    <video autoplay muted loop playsinline>
+        <source src="https://m-jpg533.github.io/hh/101.mp4">
+    </video>
+
+</div>
+
+<script>
+
+const video = document.getElementById("mainVideo");
+const hint = document.getElementById("hint");
+
+/* 點一下開聲音 */
+document.body.addEventListener("click", async () => {
+
+    hint.style.display = "none";
+
+    video.muted = false;
+
+    try {
+        await video.play();
+    } catch(e) {
+        console.log(e);
+    }
+
+}, { once:true });
+
+</script>
+
+</body>
+</html>

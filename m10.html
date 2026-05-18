@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pre-roll 廣告</title>
+
+<style>
+
+body{
+    margin:0;
+    background:black;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.player{
+    width:100%;
+    max-width:650px;
+    position:relative;
+}
+
+#adVideo,
+#mainVideo{
+    width:100%;
+    border-radius:18px;
+}
+
+#mainVideo{
+    height:60vh;
+    border:none;
+    visibility:hidden;
+    position:absolute;
+    top:0;
+    left:0;
+}
+
+#startBtn{
+    position:absolute;
+    z-index:9999;
+    padding:16px 35px;
+    font-size:22px;
+    border:none;
+    border-radius:12px;
+    background:#ffcc00;
+    font-weight:bold;
+}
+
+#skipBtn{
+    position:absolute;
+    top:10px;
+    right:10px;
+    padding:10px 18px;
+    border:none;
+    border-radius:10px;
+    background:red;
+    color:white;
+    display:none;
+    z-index:9999;
+}
+
+#adText{
+    position:absolute;
+    top:10px;
+    left:10px;
+    color:white;
+    background:rgba(0,0,0,0.6);
+    padding:6px 12px;
+    border-radius:10px;
+    display:none;
+    z-index:9999;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="player">
+
+<button id="startBtn">▶ 點擊播放</button>
+
+<div id="adText">廣告播放中...</div>
+
+<button id="skipBtn">跳過</button>
+
+<!-- 廣告 -->
+<video
+id="adVideo"
+playsinline
+controls
+webkit-playsinline
+>
+    <source
+    src="https://m-jpg533.github.io/hh/68.mp4"
+    type="video/mp4">
+</video>
+
+<!-- YouTube -->
+<iframe
+id="mainVideo"
+allow="autoplay; encrypted-media"
+allowfullscreen>
+</iframe>
+
+</div>
+
+<script>
+
+const startBtn = document.getElementById("startBtn");
+const adVideo = document.getElementById("adVideo");
+const mainVideo = document.getElementById("mainVideo");
+const skipBtn = document.getElementById("skipBtn");
+const adText = document.getElementById("adText");
+
+/* 開始 */
+startBtn.onclick = async () => {
+
+    startBtn.style.display = "none";
+
+    skipBtn.style.display = "block";
+    adText.style.display = "block";
+
+    adVideo.muted = false;
+    adVideo.volume = 1;
+
+    try{
+        await adVideo.play();
+    }catch(err){
+        console.log(err);
+    }
+
+};
+
+/* 廣告結束 */
+adVideo.onended = () => {
+    startMain();
+};
+
+/* 跳過 */
+skipBtn.onclick = () => {
+
+    adVideo.pause();
+
+    startMain();
+
+};
+
+/* 主影片 */
+function startMain(){
+
+    adVideo.style.display = "none";
+
+    skipBtn.style.display = "none";
+
+    adText.style.display = "none";
+
+    mainVideo.style.visibility = "visible";
+
+    mainVideo.src =
+    "https://www.youtube.com/embed/WjK1OrnSDNg?autoplay=1&playsinline=1";
+
+}
+
+</script>
+
+</body>
+</html>

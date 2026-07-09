@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🌀 中央氣象署颱風動態</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+
+    width:100%;
+    height:100%;
+    font-family:Arial,"Microsoft JhengHei";
+    background:#0b1f35;
+    overflow:hidden;
+
+}
+
+header{
+
+    height:60px;
+
+    background:#005bac;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 20px;
+
+    box-shadow:0 2px 10px rgba(0,0,0,.3);
+
+}
+
+header h2{
+
+    font-size:24px;
+
+}
+
+.right{
+
+    display:flex;
+
+    gap:10px;
+
+    align-items:center;
+
+}
+
+button{
+
+    padding:10px 18px;
+
+    border:none;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+    background:#1e88e5;
+
+    color:white;
+
+    font-size:15px;
+
+}
+
+button:hover{
+
+    background:#1565c0;
+
+}
+
+#time{
+
+    font-weight:bold;
+
+}
+
+iframe{
+
+    width:100%;
+
+    height:calc(100vh - 60px);
+
+    border:none;
+
+    background:white;
+
+}
+
+#message{
+
+    position:absolute;
+
+    top:50%;
+
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:10px;
+
+    box-shadow:0 0 20px rgba(0,0,0,.25);
+
+    display:none;
+
+    text-align:center;
+
+    max-width:500px;
+
+}
+
+#message h3{
+
+    margin-bottom:15px;
+
+}
+
+#message p{
+
+    margin-bottom:20px;
+
+    line-height:1.7;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h2>
+
+🌀 中央氣象署颱風動態
+
+</h2>
+
+<div class="right">
+
+<div id="time"></div>
+
+<button onclick="reloadFrame()">
+
+🔄 更新
+
+</button>
+
+<button onclick="openOfficial()">
+
+🌐 官方網站
+
+</button>
+
+<button onclick="toggleFullscreen()">
+
+🖥 全螢幕
+
+</button>
+
+</div>
+
+</header>
+
+<iframe
+id="frame"
+src="https://app.cwa.gov.tw/web/obsmap/typhoon.html">
+</iframe>
+
+<div id="message">
+
+<h3>⚠ 無法嵌入官方網站</h3>
+
+<p>
+
+中央氣象署可能禁止 iframe 顯示。<br>
+請按下面按鈕直接開啟官方網站。
+
+</p>
+
+<button onclick="openOfficial()">
+
+開啟中央氣象署
+
+</button>
+
+</div>
+
+<script>
+
+const frame=document.getElementById("frame");
+
+let loaded=false;
+
+frame.onload=function(){
+
+    loaded=true;
+
+};
+
+setTimeout(()=>{
+
+    if(!loaded){
+
+        document.getElementById("message").style.display="block";
+
+    }
+
+},5000);
+
+function reloadFrame(){
+
+    frame.src=frame.src.split("?")[0]+"?t="+Date.now();
+
+}
+
+function openOfficial(){
+
+    window.open(
+        "https://app.cwa.gov.tw/web/obsmap/typhoon.html",
+        "_blank"
+    );
+
+}
+
+function toggleFullscreen(){
+
+    if(!document.fullscreenElement){
+
+        document.documentElement.requestFullscreen();
+
+    }else{
+
+        document.exitFullscreen();
+
+    }
+
+}
+
+function updateClock(){
+
+    const d=new Date();
+
+    document.getElementById("time").innerHTML=
+    d.toLocaleString("zh-TW");
+
+}
+
+updateClock();
+
+setInterval(updateClock,1000);
+
+// 每10分鐘重新載入 iframe
+setInterval(reloadFrame,600000);
+
+</script>
+
+</body>
+</html>

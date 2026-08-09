@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>群組影片</title>
+
+<style>
+
+body {
+    margin: 0;
+    background: #000;
+    color: white;
+    font-family:
+        "Microsoft JhengHei",
+        Arial,
+        sans-serif;
+}
+
+#warning {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    background: #000;
+
+    padding: 20px;
+}
+
+.warning-box {
+
+    max-width: 700px;
+
+    font-size: 24px;
+
+    line-height: 2;
+}
+
+#countdown {
+
+    margin-top: 20px;
+
+    font-size: 18px;
+
+    color: #aaa;
+}
+
+#video {
+
+    display: none;
+
+    width: 100vw;
+
+    height: 100vh;
+}
+
+iframe {
+
+    width: 100%;
+
+    height: 100%;
+
+    border: 0;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div id="warning">
+
+    <div class="warning-box">
+
+        ⚠️
+
+        <br>
+
+        <strong>
+        此影片僅供群組觀賞
+        </strong>
+
+        <br>
+
+        僅限非商業用途
+
+        <br>
+
+        未經允許，不得分享、
+        轉載或公開發布
+
+        <div id="countdown">
+            影片將於 5 秒後開始
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="video">
+
+    <iframe
+        src="https://www.youtube.com/embed/aNaNrBIy1FY?rel=0"
+        allowfullscreen>
+    </iframe>
+
+</div>
+
+
+<script>
+
+let seconds = 5;
+
+const countdown =
+    document.getElementById("countdown");
+
+const warning =
+    document.getElementById("warning");
+
+const video =
+    document.getElementById("video");
+
+
+const timer = setInterval(
+    function() {
+
+        seconds--;
+
+        if (seconds > 0) {
+
+            countdown.innerText =
+                "影片將於 "
+                + seconds
+                + " 秒後開始";
+
+        } else {
+
+            clearInterval(timer);
+
+            warning.style.display =
+                "none";
+
+            video.style.display =
+                "block";
+        }
+
+    },
+    1000
+);
+
+</script>
+
+</body>
+
+</html>

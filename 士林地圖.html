@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>士林北投洋流號車掃路線圖｜11/26</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root { --navy:#14243a; --blue:#2167d5; --red:#dc3545; --muted:#607086; --paper:#f4f7fb; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Microsoft JhengHei", system-ui, sans-serif; background:var(--paper); color:#1d2939; }
+    header { background:linear-gradient(120deg,#14243a,#244b78); color:white; padding:20px 22px; }
+    header h1 { margin:0 0 8px; font-size:clamp(20px,3vw,29px); }
+    header p { margin:4px 0; color:#e4edf8; }
+    .layout { display:grid; grid-template-columns:minmax(290px,380px) 1fr; gap:14px; padding:14px; min-height:calc(100vh - 122px); }
+    .panel { background:white; border:1px solid #dce4ee; border-radius:14px; box-shadow:0 3px 14px #14243a0c; overflow:hidden; }
+    .panel-head { padding:14px 16px; border-bottom:1px solid #e6ebf2; }
+    .panel-head h2 { margin:0 0 6px; font-size:18px; }
+    .small { color:var(--muted); font-size:12px; line-height:1.6; }
+    .tools { display:flex; flex-wrap:wrap; gap:8px; padding:12px 14px; border-bottom:1px solid #e6ebf2; }
+    button { border:0; border-radius:9px; background:var(--blue); color:white; padding:10px 12px; font-weight:700; cursor:pointer; }
+    button.secondary { background:#e8eef7; color:#23364f; }
+    button:disabled { opacity:.55; cursor:wait; }
+    #status { padding:10px 14px; font-size:13px; color:#3c506b; background:#f7faff; border-bottom:1px solid #e6ebf2; line-height:1.5; }
+    .progress { height:5px; background:#e8edf5; }
+    #progressBar { height:5px; width:0; background:#2d75db; transition:width .2s; }
+    #routeList { padding:8px 14px 16px; max-height:calc(100vh - 360px); overflow:auto; }
+    .stage { margin:12px 0 6px; font-size:13px; font-weight:800; color:#1e5ba6; }
+    .stop { display:flex; gap:10px; padding:7px 2px; border-bottom:1px dashed #edf0f4; font-size:13px; line-height:1.45; }
+    .num { flex:0 0 23px; width:23px; height:23px; display:grid; place-items:center; border-radius:50%; background:#e9f1ff; color:#1e5ba6; font-size:11px; font-weight:800; }
+    .map-panel { position:relative; min-height:580px; }
+    #map, #googleMap { width:100%; height:100%; min-height:580px; border-radius:14px; }
+    #googleMap { display:none; }
+    .google-settings { display:flex; flex-wrap:wrap; gap:7px; align-items:center; padding:10px 14px; border-bottom:1px solid #e6ebf2; background:#fbfcfe; }
+    .google-settings input { flex:1 1 190px; min-width:150px; border:1px solid #cbd5e1; border-radius:8px; padding:9px 10px; font-size:13px; }
+    .google-settings .hint { flex-basis:100%; color:#607086; font-size:11px; line-height:1.5; }
+    .map-note { pointer-events:none; }
+    .map-note { position:absolute; z-index:500; left:12px; bottom:12px; max-width:420px; background:#fffffff0; border:1px solid #dbe3ed; border-radius:9px; padding:8px 10px; font-size:11px; color:#526175; line-height:1.5; box-shadow:0 2px 8px #00000014; }
+    .legend { display:flex; flex-wrap:wrap; gap:12px; padding:10px 14px; font-size:12px; color:#526175; }
+    .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; }
+    footer { padding:0 16px 18px; color:#66758a; font-size:11px; line-height:1.6; }
+    @media (max-width:900px) { .layout { grid-template-columns:1fr; } .map-panel { order:-1; min-height:54vh; } #map { min-height:54vh; } #routeList { max-height:440px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>LINE 士林 SHILIN｜洋流號車掃路線</h1>
+  <p><strong>11/26 北投士林艦隊</strong>　2026 年 11 月 26 日（星期四）14:00–17:00</p>
+  <p>起點：台北市士林區延平北路六段 56 號　｜　終點：台北市北投區七星街 1 號</p>
+</header>
+<div class="layout">
+  <section class="panel">
+    <div class="panel-head">
+      <h2>沿途路線（依提供順序）</h2>
+      <div class="small">地圖會依道路名稱嘗試定位，再串接行車路線並加上方向箭頭。</div>
+    </div>
+    <div class="tools">
+      <button id="buildBtn" onclick="buildRoute()">定位並繪製完整路線</button>
+      <button class="secondary" onclick="copyRoute()">複製路線文字</button>
+      <button class="secondary" onclick="openGoogleMaps()">Google 地圖（起訖導航）</button>
+    </div>
+    <div class="google-settings">
+      <input id="googleKey" type="password" autocomplete="off" placeholder="貼上 Google Maps API Key（不會自動上傳或儲存）" />
+      <button type="button" onclick="loadGoogleBase()">載入 Google 地圖底圖</button>
+      <button type="button" class="secondary" onclick="useOsmBase()">返回免費 OSM 底圖</button>
+      <div class="hint">Google 底圖需提供自己的 API Key，且 Google Maps JavaScript API 專案需符合 Google 的啟用／計費要求。沒有 Key 時可繼續使用免費 OSM 底圖。</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div id="status">按「定位並繪製完整路線」開始載入地圖資料。第一次載入需要連網。</div>
+    <div class="legend">
+      <span><i class="dot" style="background:#159447"></i>起點</span>
+      <span><i class="dot" style="background:#dc3545"></i>行進路線／箭頭</span>
+      <span><i class="dot" style="background:#2167d5"></i>重要路段</span>
+      <span><i class="dot" style="background:#202b3c"></i>終點</span>
+    </div>
+    <div id="routeList"></div>
+    <footer>
+      注意：道路名稱的線上定位與道路導航屬估算，巷弄或同名道路可能定位不精確；實際通行請以現場道路、交通管制及導航為準。本頁不是即時車隊追蹤，也不是主辦單位正式公告。
+    </footer>
+  </section>
+  <section class="panel map-panel">
+    <div id="map"></div>
+    <div id="googleMap"></div>
+    <div class="map-note" id="mapNote">目前為免費 OpenStreetMap 底圖。載入 Google API Key 後，可切換為 Google 地圖，並保留路線與方向箭頭。</div>
+  </section>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
+<script>
+const START = '延平北路六段56號, 台北市士林區, 台灣';
+const END = '七星街1號, 台北市北投區, 台灣';
+const roads = [
+  '社正路','社中街','永平街','延平北路六段','延平北路五段','葫蘆街','延平北路五段','葫東街',
+  '重慶北路四段','百齡橋','承德路四段','福港街','大南路','前港街','承德路四段','劍潭路','基河路',
+  '文林路','文林橋','福國路','中山北路五段','至誠路二段','雨聲街','忠義街','德行東路','德行東路109巷',
+  '土東路91巷','天母東路8巷','天母東路8巷31弄','天母東路22巷','天母東路43巷','中山北路七段14巷',
+  '天母東路69巷','天母圓環','中山北路七段','天母西路','天母西路130巷','振興街','明德路','振華街',
+  '裕民一路40巷','裕民六路','裕民六路114巷','懷德街','東華街一段400巷','懷德街','東陽街','西安街一段',
+  '自強街','致遠一路一段','明德路','文林北路','承德路七段','實踐街','尊賢街','吉利街',
+  '立農街一段413巷','西安街二段','致遠三路','東華街二段','公館路','崇仁路一段','中央南路一段','光明路','七星街'
+];
+const allStops = [START, ...roads.map(x => x + ', 台北市, 台灣'), END];
+const importantNames = new Set(['百齡橋','文林橋','天母圓環','明德路','七星街']);
+const map = L.map('map').setView([25.105,121.535], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+let routeLayer = null, arrowLayer = null, markerLayer = L.layerGroup().addTo(map);
+let googleMap = null, googleObjects = [], activeBase = 'osm', lastRouteData = null, googleLoading = false;
+const cache = new Map();
+const sleep = ms => new Promise(r => setTimeout(r,ms));
+function setStatus(t, p) {
+  document.getElementById('status').textContent = t;
+  if (p !== undefined) document.getElementById('progressBar').style.width = p + '%';
+}
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function markerIcon(color, label) {
+  return L.divIcon({className:'', html:`<div style="width:29px;height:29px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 6px #0008;color:white;font-weight:800;font-size:12px;display:grid;place-items:center">${label}</div>`, iconSize:[29,29], iconAnchor:[14,14]});
+}
+async function geocode(query) {
+  if (cache.has(query)) return cache.get(query);
+  const url = 'https://photon.komoot.io/api/?' + new URLSearchParams({q:query, limit:'8', lang:'zh', lat:'25.10', lon:'121.53'});
+  let found = null;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('Photon HTTP ' + r.status);
+    const j = await r.json();
+    const fs = (j.features || []).filter(f => {
+      const c=f.geometry && f.geometry.coordinates;
+      return c && c.length===2 && c[0]>121.43 && c[0]<121.68 && c[1]>24.96 && c[1]<25.22;
+    });
+    if (fs.length) {
+      const qbase = query.split(',')[0].trim();
+      fs.sort((a,b) => {
+        const pa=a.properties||{}, pb=b.properties||{};
+        const score=p => ((p.name||'').includes(qbase)?5:0) + (p.type==='street'?3:0) + (p.type==='house'?2:0) + (p.city==='Taipei'?1:0);
+        return score(pb)-score(pa);
+      });
+      const f=fs[0], p=f.properties||{};
+      found={lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0], label:p.name||query, detail:[p.district,p.city].filter(Boolean).join(' ')};
+    }
+  } catch(e) { console.warn('Photon geocoding failed:', query, e); }
+  // Photon 找不到地址時，再以 Nominatim 查詢一次。
+  if (!found) {
+    try {
+      const u='https://nominatim.openstreetmap.org/search?' + new URLSearchParams({format:'jsonv2',q:query,limit:'5',countrycodes:'tw'});
+      const r=await fetch(u,{headers:{'Accept-Language':'zh-TW'} });
+      if (r.ok) {
+        const arr=await r.json();
+        const item=arr.find(x=>Number(x.lat)>24.96 && Number(x.lat)<25.22 && Number(x.lon)>121.43 && Number(x.lon)<121.68);
+        if(item) found={lat:Number(item.lat),lon:Number(item.lon),label:item.name||query,detail:item.display_name||''};
+      }
+    } catch(e) { console.warn('Nominatim fallback failed:', query, e); }
+  }
+  cache.set(query,found);
+  return found;
+}
+function renderList() {
+  const el=document.getElementById('routeList');
+  const groups=[
+    {title:'社子 → 士林／劍潭', start:0, end:18},
+    {title:'士林 → 天母', start:18, end:38},
+    {title:'天母 → 石牌／北投', start:38, end:roads.length}
+  ];
+  let html='<div class="stage">起點</div><div class="stop"><span class="num">起</span><span>'+esc(START)+'</span></div>';
+  let n=1;
+  for(const g of groups){
+    html+=`<div class="stage">${g.title}</div>`;
+    for(let i=g.start;i<g.end;i++) html+=`<div class="stop"><span class="num">${n++}</span><span>${esc(roads[i])}</span></div>`;
+  }
+  html+='<div class="stage">終點</div><div class="stop"><span class="num" style="background:#202b3c;color:white">終</span><span>'+esc(END)+'</span></div>';
+  el.innerHTML=html;
+}
+function clearGoogleObjects() {
+  googleObjects.forEach(obj => { if (obj && typeof obj.setMap === 'function') obj.setMap(null); });
+  googleObjects = [];
+}
+function clearAllRouteLayers() {
+  if(routeLayer) { map.removeLayer(routeLayer); routeLayer=null; }
+  if(arrowLayer) { map.removeLayer(arrowLayer); arrowLayer=null; }
+  markerLayer.clearLayers();
+  clearGoogleObjects();
+}
+function showGoogleRoute(data) {
+  if (!googleMap || !window.google || !google.maps) return;
+  clearGoogleObjects();
+  const bounds = new google.maps.LatLngBounds();
+  const path = data.lineCoords.map(c => ({lat:c[0], lng:c[1]}));
+  const polyline = new google.maps.Polyline({
+    path, geodesic:true, strokeColor:'#dc3545', strokeOpacity:0.92, strokeWeight:5,
+    icons:[{icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale:3, strokeColor:'#a91f2d', fillColor:'#a91f2d', fillOpacity:1}, offset:'100%', repeat:'130px'}]
+  });
+  polyline.setMap(googleMap); googleObjects.push(polyline);
+  const first=data.coords[0], last=data.coords[data.coords.length-1];
+  const startMarker=new google.maps.Marker({position:{lat:first.lat,lng:first.lon},map:googleMap,title:'起點：'+START,label:{text:'起',color:'#ffffff',fontWeight:'bold'}});
+  const endMarker=new google.maps.Marker({position:{lat:last.lat,lng:last.lon},map:googleMap,title:'終點：'+END,label:{text:'終',color:'#ffffff',fontWeight:'bold'}});
+  googleObjects.push(startMarker,endMarker);
+  data.lineCoords.forEach(c=>bounds.extend({lat:c[0],lng:c[1]}));
+  googleMap.fitBounds(bounds, 35);
+  data.coords.forEach(p=>{
+    const name=roads[p.index-1];
+    if(name && importantNames.has(name)) {
+      const marker=new google.maps.Marker({position:{lat:p.lat,lng:p.lon},map:googleMap,title:name,icon:{path:google.maps.SymbolPath.CIRCLE,scale:5,fillColor:'#2167d5',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:2}});
+      googleObjects.push(marker);
+    }
+  });
+}
+function drawCurrentRoute() {
+  if (!lastRouteData) return;
+  clearAllRouteLayers();
+  if (activeBase === 'google' && googleMap) {
+    showGoogleRoute(lastRouteData);
+    return;
+  }
+  const lineCoords=lastRouteData.lineCoords, coords=lastRouteData.coords;
+  routeLayer=L.polyline(lineCoords,{color:'#dc3545',weight:5,opacity:.9,lineJoin:'round'}).addTo(map);
+  if(L.polylineDecorator) {
+    arrowLayer=L.polylineDecorator(routeLayer,{patterns:[{offset:35,repeat:115,symbol:L.Symbol.arrowHead({pixelSize:10,polygon:false,pathOptions:{color:'#a91f2d',weight:3,opacity:.95}})}]}).addTo(map);
+  }
+  const first=coords[0], last=coords[coords.length-1];
+  L.marker([first.lat,first.lon],{icon:markerIcon('#159447','起')}).bindPopup('<b>起點</b><br>'+esc(START)).addTo(markerLayer);
+  L.marker([last.lat,last.lon],{icon:markerIcon('#202b3c','終')}).bindPopup('<b>終點</b><br>'+esc(END)).addTo(markerLayer);
+  coords.forEach(p=>{
+    const name=roads[p.index-1];
+    if(name && importantNames.has(name)) L.circleMarker([p.lat,p.lon],{radius:5,color:'#fff',weight:2,fillColor:'#2167d5',fillOpacity:1}).bindPopup(esc(name)).addTo(markerLayer);
+  });
+  map.fitBounds(routeLayer.getBounds(),{padding:[30,30]});
+}
+function loadGoogleBase() {
+  const key=document.getElementById('googleKey').value.trim();
+  if(!key) { setStatus('請先貼上 Google Maps API Key；沒有 Key 時請使用免費 OSM 底圖。',0); return; }
+  if(googleMap) { activateGoogleBase(); return; }
+  if(googleLoading) { setStatus('Google 地圖正在載入，請稍候。'); return; }
+  googleLoading=true;
+  setStatus('正在載入 Google 地圖底圖…');
+  window.gm_authFailure=function(){ googleLoading=false; setStatus('Google 地圖驗證失敗：請檢查 API Key、Maps JavaScript API 啟用狀態及專案設定。',0); };
+  window.initGoogleRouteMap=function(){
+    googleLoading=false;
+    googleMap=new google.maps.Map(document.getElementById('googleMap'),{
+      center:{lat:25.105,lng:121.535}, zoom:12, mapTypeId:'roadmap',
+      mapTypeControl:true, streetViewControl:true, fullscreenControl:true
+    });
+    activateGoogleBase();
+    if(lastRouteData) showGoogleRoute(lastRouteData);
+    setStatus('Google 地圖底圖已載入。路線與箭頭會顯示在 Google 地圖上。',100);
+  };
+  const script=document.createElement('script');
+  script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback=initGoogleRouteMap&v=weekly';
+  script.async=true; script.defer=true;
+  script.onerror=function(){ googleLoading=false; setStatus('Google 地圖程式載入失敗，請檢查網路或 API Key。',0); };
+  document.head.appendChild(script);
+}
+function activateGoogleBase() {
+  if(!googleMap) return;
+  activeBase='google';
+  document.getElementById('map').style.display='none';
+  document.getElementById('googleMap').style.display='block';
+  document.getElementById('mapNote').textContent='目前為 Google 地圖底圖；紅線為道路路線，箭頭表示行進方向。';
+  google.maps.event.trigger(googleMap,'resize');
+  if(lastRouteData) showGoogleRoute(lastRouteData);
+}
+function useOsmBase() {
+  activeBase='osm';
+  document.getElementById('googleMap').style.display='none';
+  document.getElementById('map').style.display='block';
+  document.getElementById('mapNote').textContent='目前為免費 OpenStreetMap 底圖。載入 Google API Key 後，可切換為 Google 地圖，並保留路線與方向箭頭。';
+  setTimeout(()=>{ map.invalidateSize(); if(lastRouteData && routeLayer) map.fitBounds(routeLayer.getBounds(),{padding:[30,30]}); },100);
+  if(lastRouteData) drawCurrentRoute();
+}
+
+async function buildRoute() {
+  const btn=document.getElementById('buildBtn'); btn.disabled=true;
+  clearAllRouteLayers();
+  lastRouteData=null;
+  renderList();
+  const coords=[], missed=[];
+  try {
+    for(let i=0;i<allStops.length;i++) {
+      const q=allStops[i];
+      setStatus(`正在定位第 ${i+1}/${allStops.length} 個點：${q.split(',')[0]}（首次載入會需要一些時間）`, Math.round((i/allStops.length)*65));
+      let p=await geocode(q);
+      if(p) coords.push({...p, index:i, query:q}); else missed.push(q);
+      // 公開地理編碼服務請勿密集呼叫；相同街名已使用快取。
+      await sleep(300);
+    }
+    if(coords.length<2) throw new Error('成功定位的點太少，無法繪製路線。請檢查網路連線後重試。');
+    setStatus(`已定位 ${coords.length} 個點，正在計算道路路線與方向箭頭…`,70);
+    let lineCoords=null, routeMessage='';
+    try {
+      const coordString=coords.map(p=>`${p.lon},${p.lat}`).join(';');
+      const url=`https://router.project-osrm.org/route/v1/driving/${coordString}?overview=full&geometries=geojson&steps=false`;
+      const r=await fetch(url);
+      if(!r.ok) throw new Error('OSRM HTTP '+r.status);
+      const data=await r.json();
+      if(data.code!=='Ok' || !data.routes || !data.routes.length) throw new Error(data.message||'沒有找到道路路線');
+      lineCoords=data.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+      routeMessage='已完成道路路線計算。';
+    } catch(e) {
+      console.warn('OSRM route failed:',e);
+      lineCoords=coords.map(p=>[p.lat,p.lon]);
+      routeMessage='道路導航服務暫時無法計算，已改以定位點連線顯示（非實際道路軌跡）。';
+    }
+    lastRouteData={lineCoords,coords};
+    drawCurrentRoute();
+    let msg=`${routeMessage} 成功定位 ${coords.length}/${allStops.length} 個點。`;
+    if(missed.length) msg+=` 未定位 ${missed.length} 個：${missed.map(x=>x.split(',')[0]).join('、')}。可按按鈕重試。`;
+    setStatus(msg,100);
+  } catch(e) {
+    setStatus('載入失敗：'+e.message+'。請確認電腦可連線至網路，再重新按一次。',0);
+  } finally { btn.disabled=false; }
+}
+function routeText() { return `LINE 士林 SHILIN｜洋流號車掃\n2026/11/26（週四）14:00–17:00\n起點：${START}\n\n${roads.join(' → ')}\n\n終點：${END}`; }
+async function copyRoute() {
+  try { await navigator.clipboard.writeText(routeText()); setStatus('路線文字已複製。',100); }
+  catch(e) { window.prompt('請手動複製以下路線文字：',routeText()); }
+}
+function openGoogleMaps() {
+  const url='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(START)+'&destination='+encodeURIComponent(END)+'&travelmode=driving';
+  window.open(url,'_blank','noopener');
+}
+renderList();
+</script>
+</body>
+</html>
